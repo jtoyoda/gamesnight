@@ -13,8 +13,8 @@ data class GameEvent(
         var game: String?,
         var date: Timestamp?,
         @OneToMany(mappedBy = "event", fetch = FetchType.EAGER)
-        var attendees: MutableList<UserAttendsGameEvent>,
+        var attendees: MutableList<GamerAttendsGameEvent>,
         @ManyToOne
         @JoinColumn(name = "picker_id")
-        var picker: User?
+        var picker: Gamer?
 )

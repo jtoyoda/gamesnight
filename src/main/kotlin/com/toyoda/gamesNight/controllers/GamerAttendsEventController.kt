@@ -10,17 +10,17 @@ const val BEARER_TOKEN = "Bearer"
 
 @Controller
 @RequestMapping("/api/v1/gamesNight/events")
-class UserEventController(private val gameEventService: GameEventService, private val authService: AuthService) {
+class GamerAttendsEventController(private val gameEventService: GameEventService, private val authService: AuthService) {
     @GetMapping
-    fun getEventsForUser(@RequestHeader("Authorization") bearerToken: String): ResponseEntity<Any> {
+    fun getEventsForGamer(@RequestHeader("Authorization") bearerToken: String): ResponseEntity<Any> {
         val user = authService.getUser(getTokenFromAuthorizationString(bearerToken))
         return ResponseEntity.ok(gameEventService.getEventsForUser(user))
     }
 
     @PutMapping("/{id}")
-    fun updateEventForUser(@RequestHeader("Authorization") bearerToken: String,
-                           @RequestBody respondToEventBody: ResponseToEventBody,
-                           @PathVariable("id") id: Int): ResponseEntity<Any> {
+    fun updateEventForGamer(@RequestHeader("Authorization") bearerToken: String,
+                            @RequestBody respondToEventBody: ResponseToEventBody,
+                            @PathVariable("id") id: Int): ResponseEntity<Any> {
         val user = authService.getUser(getTokenFromAuthorizationString(bearerToken))
         return ResponseEntity.ok(gameEventService.updateEventForUser(id, user, respondToEventBody.attending, respondToEventBody.game))
     }

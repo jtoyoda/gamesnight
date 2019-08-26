@@ -10,14 +10,14 @@ import javax.transaction.Transactional
 
 @Service
 @Transactional(rollbackOn = [Exception::class])
-class GameNightService(private val gameNightRepository: GameNightRepository, private val userService: UserService) {
+class GameNightService(private val gameNightRepository: GameNightRepository, private val gamerService: GamerService) {
     fun getNights(): Set<GameNight> {
         return gameNightRepository.findAll().toSet()
     }
 
     fun createNight(name: String, dayOfWeek: DayOfWeek, attendees: Set<Int>, repeat: RepeatEnum, hour: Int,
                     minute: Int): GameNight {
-        val gameNight = GameNight(null, name, dayOfWeek, repeat, hour, minute, userService.findByIdIn(attendees), null)
+        val gameNight = GameNight(null, name, dayOfWeek, repeat, hour, minute, gamerService.findByIdIn(attendees), null)
         return gameNightRepository.save(gameNight)
     }
 
@@ -27,7 +27,7 @@ class GameNightService(private val gameNightRepository: GameNightRepository, pri
         gameNight.name = name ?: gameNight.name
         gameNight.dayOfWeek = dayOfWeek ?: dayOfWeek
         if (attendees != null) {
-            gameNight.attendees = userService.findByIdIn(attendees)
+            gameNight.attendees = gamerService.findByIdIn(attendees)
         }
         gameNight.repeat = repeat ?: gameNight.repeat
         gameNight.hour = hour ?: gameNight.hour

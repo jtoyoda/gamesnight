@@ -21,10 +21,10 @@ data class GameNight(
         var minute: Int?,
         @ManyToMany(fetch = FetchType.EAGER)
         @JoinTable(
-                name = "user_in_game_night",
-                joinColumns = [JoinColumn(name = "user_id")],
+                name = "gamer_in_game_night",
+                joinColumns = [JoinColumn(name = "gamer_id")],
                 inverseJoinColumns = [JoinColumn(name = "game_night_id")])
-        var attendees: MutableList<User>,
+        var attendees: MutableList<Gamer>,
         @CreatedDate
         var createdOn: Timestamp?
 ) {

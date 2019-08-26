@@ -1,4 +1,4 @@
-CREATE TABLE user
+CREATE TABLE gamer
 (
     id       SERIAL PRIMARY KEY,
     name     VARCHAR,
@@ -15,32 +15,32 @@ CREATE TABLE game_event
     name      VARCHAR,
     game      VARCHAR,
     date      TIMESTAMP,
-    picker_id INT REFERENCES user (id)
+    picker_id INT REFERENCES gamer (id)
 );
 
 
-CREATE TABLE user_attends_game_event
+CREATE TABLE gamer_attends_game_event
 (
-    id       SERIAL PRIMARY KEY,
-    user_id  INT REFERENCES user (id),
-    event_id INT REFERENCES game_event (id),
+    id        SERIAL PRIMARY KEY,
+    gamer_id   INT REFERENCES gamer (id),
+    event_id  INT REFERENCES game_event (id),
     attending BOOLEAN NOT NULL
 );
 
 CREATE TABLE game_night
 (
-  id SERIAL PRIMARY KEY ,
-  name VARCHAR,
-  day_of_week VARCHAR,
-  repeat VARCHAR,
-  hour INT,
-  minute INT,
-  created_on TIMESTAMP
+    id          SERIAL PRIMARY KEY,
+    name        VARCHAR,
+    day_of_week VARCHAR,
+    repeat      VARCHAR,
+    hour        INT,
+    minute      INT,
+    created_on  TIMESTAMP
 );
 
-CREATE TABLE user_in_game_night
+CREATE TABLE gamer_in_game_night
 (
-    id SERIAL PRIMARY KEY ,
-    user_id INT REFERENCES user(id),
-    game_night_id INT REFERENCES game_night(id)
+    id            SERIAL PRIMARY KEY,
+    gamer_id       INT REFERENCES gamer (id),
+    game_night_id INT REFERENCES game_night (id)
 );

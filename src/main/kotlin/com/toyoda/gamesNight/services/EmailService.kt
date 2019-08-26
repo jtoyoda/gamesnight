@@ -2,7 +2,7 @@ package com.toyoda.gamesNight.services
 
 import com.sendgrid.*
 import com.toyoda.gamesNight.database.models.GameEvent
-import com.toyoda.gamesNight.database.models.User
+import com.toyoda.gamesNight.database.models.Gamer
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.io.IOException
@@ -15,22 +15,22 @@ class EmailService(val sendGrid: SendGrid) {
     @Value("\${url}")
     lateinit var url: String
 
-    fun inviteUser(event: GameEvent, user: User) {
-        user.email?.let {
+    fun inviteUser(event: GameEvent, gamer: Gamer) {
+        gamer.email?.let {
             val dateString = event.date?.let {
                 val instant = Instant.ofEpochMilli(it.time).atZone(ZoneId.systemDefault())
                 instant.format(DateTimeFormatter.ofPattern("MMM dd"))
             } ?: "soon"
             var contentString = "Please respond <a href=”${url}”>here</a>"
-            if (event.picker == user) {
+            if (event.picker == gamer) {
                 contentString += "\nYou are picking the game this week!"
             }
             sendEmail("New Gaming Event ${event.name} on $dateString", "<html><body>$contentString</body></html>", it)
         }
     }
 
-    fun uninviteUser(event: GameEvent, user: User) {
-        user.email?.let {
+    fun uninviteUser(event: GameEvent, gamer: Gamer) {
+        gamer.email?.let {
             val dateString = event.date?.let {
                 val instant = Instant.ofEpochMilli(it.time).atZone(ZoneId.systemDefault())
                 instant.format(DateTimeFormatter.ofPattern("MMM dd"))
