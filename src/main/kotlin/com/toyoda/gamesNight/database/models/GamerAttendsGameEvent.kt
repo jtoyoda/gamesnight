@@ -7,7 +7,7 @@ data class GamerAttendsGameEvent(
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         @Column(columnDefinition = "serial")
-        var id: Long?,
+        var id: Int?,
         @ManyToOne(fetch = FetchType.EAGER)
         var gamer: Gamer?,
         @ManyToOne

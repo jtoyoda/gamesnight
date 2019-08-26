@@ -1,5 +1,8 @@
 package com.toyoda.gamesNight.database.models
 
+import com.fasterxml.jackson.annotation.JsonManagedReference
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.toyoda.gamesNight.controllers.GamerInGameNightSerializer
 import com.toyoda.gamesNight.controllers.RepeatEnum
 import org.springframework.data.annotation.CreatedDate
 import java.sql.Timestamp
@@ -11,7 +14,7 @@ data class GameNight(
         @Id
         @GeneratedValue(strategy = GenerationType.IDENTITY)
         @Column(columnDefinition = "serial")
-        var id: Long?,
+        var id: Int?,
         var name: String?,
         @Enumerated(EnumType.STRING)
         var dayOfWeek: DayOfWeek?,
@@ -19,13 +22,9 @@ data class GameNight(
         var repeat: RepeatEnum?,
         var hour: Int?,
         var minute: Int?,
-        @ManyToMany(fetch = FetchType.EAGER)
-        @JoinTable(
-                name = "gamer_in_game_night",
-                joinColumns = [JoinColumn(name = "gamer_id")],
-                inverseJoinColumns = [JoinColumn(name = "game_night_id")])
-        var attendees: MutableList<Gamer>,
-        @CreatedDate
+        @OneToMany(mappedBy = "gameNight")
+        @JsonSerialize(using = GamerInGameNightSerializer::class)
+        var attendees: MutableList<GamerInGameNight>,
         var createdOn: Timestamp?
 ) {
 }

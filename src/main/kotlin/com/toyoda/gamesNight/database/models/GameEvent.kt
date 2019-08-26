@@ -1,5 +1,7 @@
 package com.toyoda.gamesNight.database.models
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
+import com.toyoda.gamesNight.controllers.GamerAttendsGameEventSerializer
 import java.sql.Timestamp
 import javax.persistence.*
 
@@ -13,6 +15,7 @@ data class GameEvent(
         var game: String?,
         var date: Timestamp?,
         @OneToMany(mappedBy = "event", fetch = FetchType.EAGER)
+        @JsonSerialize(using = GamerAttendsGameEventSerializer::class)
         var attendees: MutableList<GamerAttendsGameEvent>,
         @ManyToOne
         @JoinColumn(name = "picker_id")

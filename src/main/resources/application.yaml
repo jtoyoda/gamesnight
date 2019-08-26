@@ -1,5 +1,5 @@
 url: http://localhost:3000
-
+sendEmail: false
 spring:
   # Disabling non-relevant error log
   jpa:

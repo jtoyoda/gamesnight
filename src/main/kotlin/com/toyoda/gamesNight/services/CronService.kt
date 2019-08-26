@@ -43,7 +43,7 @@ class CronService(private val gameNightService: GameNightService, private val ga
                 .withHour(gameNight.hour ?: 18)
                 .withMinute(gameNight.minute ?: 30)
                 .toInstant().toEpochMilli()
-        gameEventService.createEvent(getName(gameNight, zonedNow), gameNight, picker, date)
+        gameEventService.createEvent(getName(gameNight, zonedNow), gameNight, picker?.gamer, date)
     }
 
     private fun getName(gameNight: GameNight, now: ZonedDateTime): String {

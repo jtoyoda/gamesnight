@@ -26,10 +26,16 @@ class GameNightController(private val gamesNightService: GameNightService) {
         return ResponseEntity.ok(gamesNightService.updateNight(id, gamesNightBody.name, gamesNightBody.dayOfWeek,
                 gamesNightBody.attendees, gamesNightBody.repeat, gamesNightBody.hour, gamesNightBody.minute))
     }
+
+    @DeleteMapping("/{id}")
+    fun deleteGameNight(@PathVariable("id") id: Int): ResponseEntity<Any> {
+        gamesNightService.deleteGamesNight(id)
+        return ResponseEntity.noContent().build()
+    }
 }
 
 data class GamesNightBody(val name: String, val dayOfWeek: DayOfWeek, val attendees: Set<Int>, val repeat: RepeatEnum,
                           val hour: Int, val minute: Int)
 
 data class GamesNightUpdateBody(val name: String?, val dayOfWeek: DayOfWeek?, val attendees: Set<Int>?, val repeat: RepeatEnum?,
-                                val hour: Int, val minute: Int)
+                                val hour: Int?, val minute: Int?)

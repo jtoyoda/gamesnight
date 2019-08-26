@@ -1,6 +1,6 @@
 package com.toyoda.gamesNight.services
 
-import com.toyoda.gamesNight.database.dao.UserRepository
+import com.toyoda.gamesNight.database.dao.GamerRepository
 import com.toyoda.gamesNight.database.models.Gamer
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
@@ -17,44 +17,44 @@ val STRING_CHARACTERS = ('0'..'z').toList().toTypedArray()
 
 @Service
 @Transactional
-class GamerService(val userRepository: UserRepository, private val emailService: EmailService): AuthService {
+class GamerService(val gamerRepository: GamerRepository, private val emailService: EmailService): AuthService {
     override fun login(email: String, password: String): String {
-        return userRepository.findByEmailAndPassword(email, password)?.token ?: throw NotAuthorizedException()
+        return gamerRepository.findByEmailAndPassword(email, password)?.token ?: throw NotAuthorizedException()
     }
 
     override fun signup(email: String, password: String) {
-        val user = userRepository.findByEmailAndPassword(email, password) ?: throw InvalidIdException()
+        val user = gamerRepository.findByEmail(email) ?: throw InvalidIdException()
         user.password = password
-        userRepository.save(user)
+        gamerRepository.save(user)
     }
 
     override fun getUser(tokenFromAuthorizationString: String?): Gamer {
-        return userRepository.findByToken(tokenFromAuthorizationString?: throw InvalidIdException())?: throw InvalidIdException()
+        return gamerRepository.findByToken(tokenFromAuthorizationString?: throw InvalidIdException())?: throw InvalidIdException()
     }
 
     fun getGamers(): Set<Gamer> {
-        return userRepository.findAll().toSet()
+        return gamerRepository.findAll().toSet()
     }
 
     fun createGamer(name: String, email: String): Gamer {
-        userRepository.findByEmail(email)?.let {
+        gamerRepository.findByEmail(email)?.let {
             throw DuplicateEmailException()
         }
-        val user = Gamer(null, name, email, null, generateToken(), mutableSetOf())
+        val user = Gamer(null, name, email, null, generateToken())
         emailService.sendSignupEmail(user.name, user.email)
-        return userRepository.save(user)
+        return gamerRepository.save(user)
     }
 
     fun updateGamer(id: Int, name: String?, email: String?): Gamer {
-        val user = userRepository.findByIdOrNull(id) ?: throw InvalidIdException()
+        val user = gamerRepository.findByIdOrNull(id) ?: throw InvalidIdException()
         user.name = name ?: user.name
         user.email = email ?: user.email
-        return userRepository.save(user)
+        return gamerRepository.save(user)
     }
 
     fun deleteGamer(id: Int) {
-        val user = userRepository.findByIdOrNull(id) ?: throw InvalidIdException()
-        userRepository.delete(user)
+        val user = gamerRepository.findByIdOrNull(id) ?: throw InvalidIdException()
+        gamerRepository.delete(user)
     }
 
     private fun generateToken(): String {
@@ -66,10 +66,10 @@ class GamerService(val userRepository: UserRepository, private val emailService:
     }
 
     fun findByIdIn(attendees: Set<Int>): MutableList<Gamer> {
-        return userRepository.findAllById(attendees)
+        return gamerRepository.findAllById(attendees)
     }
 
     fun findById(id: Int): Gamer? {
-        return userRepository.findByIdOrNull(id)
+        return gamerRepository.findByIdOrNull(id)
     }
 }

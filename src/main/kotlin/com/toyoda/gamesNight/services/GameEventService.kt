@@ -38,7 +38,7 @@ class GameEventService(private val gameEventRepository: GameEventRepository, pri
         when {
             night != null -> {
                 val gameNight =  gameNightService.findById(night) ?: throw InvalidIdException()
-                gamerAttendsGameEventService.updateInvites(gameNight.attendees, event.attendees.mapNotNull { it.gamer }, event)
+                gamerAttendsGameEventService.updateInvites(gameNight.attendees.map{it.gamer}, event.attendees.mapNotNull { it.gamer }, event)
             }
             attendees != null -> gamerAttendsGameEventService.updateInvites(gamerService.findByIdIn(attendees).toMutableList(), event.attendees.mapNotNull{ it.gamer }, event)
         }
@@ -80,7 +80,7 @@ class GameEventService(private val gameEventRepository: GameEventRepository, pri
 
     fun createEvent(name: String, gameNight: GameNight, picker: Gamer?, date: Long): GameEvent {
         val event = gameEventRepository.save(GameEvent(null, name, null, Timestamp(date), mutableListOf(), picker))
-        val usersInvited = gamerAttendsGameEventService.inviteGamers(gameNight.attendees, event)
+        val usersInvited = gamerAttendsGameEventService.inviteGamers(gameNight.attendees.map{it.gamer}, event)
         event.attendees = usersInvited
         return gameEventRepository.save(event)
     }

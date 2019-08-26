@@ -22,8 +22,8 @@ CREATE TABLE game_event
 CREATE TABLE gamer_attends_game_event
 (
     id        SERIAL PRIMARY KEY,
-    gamer_id   INT REFERENCES gamer (id),
-    event_id  INT REFERENCES game_event (id),
+    gamer_id  INT REFERENCES gamer (id) ON DELETE CASCADE,
+    event_id  INT REFERENCES game_event (id) ON DELETE CASCADE,
     attending BOOLEAN NOT NULL
 );
 
@@ -41,6 +41,6 @@ CREATE TABLE game_night
 CREATE TABLE gamer_in_game_night
 (
     id            SERIAL PRIMARY KEY,
-    gamer_id       INT REFERENCES gamer (id),
-    game_night_id INT REFERENCES game_night (id)
+    gamer_id      INT REFERENCES gamer (id) ON DELETE CASCADE,
+    game_night_id INT REFERENCES game_night (id) ON DELETE CASCADE
 );
