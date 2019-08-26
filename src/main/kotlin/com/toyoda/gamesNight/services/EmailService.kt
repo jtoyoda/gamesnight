@@ -17,11 +17,11 @@ class EmailService(val sendGrid: SendGrid) {
 
     fun inviteUser(event: GameEvent, gamer: Gamer) {
         gamer.email?.let {
-            val dateString = event.date?.let {
-                val instant = Instant.ofEpochMilli(it.time).atZone(ZoneId.systemDefault())
+            val dateString = event.date?.let { timestamp ->
+                val instant = Instant.ofEpochMilli(timestamp.time).atZone(ZoneId.systemDefault())
                 instant.format(DateTimeFormatter.ofPattern("MMM dd"))
             } ?: "soon"
-            var contentString = "Please respond <a href=”${url}”>here</a>"
+            var contentString = "Please respond <a href=”$url”>here</a>"
             if (event.picker == gamer) {
                 contentString += "\nYou are picking the game this week!"
             }
@@ -55,6 +55,13 @@ class EmailService(val sendGrid: SendGrid) {
             request.body = mail.build()
             val response = sendGrid.api(request)
         } catch (ex: IOException) {
+        }
+    }
+
+    fun sendSignupEmail(name: String?, email: String?) {
+        if (name != null && email != null) {
+            val contentString = "Please signup <a href=”$url/signup?email=$email”>here</a>"
+            sendEmail("Your invited for games night", "<html><body>$contentString</body></html>", email)
         }
     }
 }

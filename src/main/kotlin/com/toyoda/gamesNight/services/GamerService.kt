@@ -17,7 +17,7 @@ val STRING_CHARACTERS = ('0'..'z').toList().toTypedArray()
 
 @Service
 @Transactional
-class GamerService(val userRepository: UserRepository): AuthService {
+class GamerService(val userRepository: UserRepository, private val emailService: EmailService): AuthService {
     override fun login(email: String, password: String): String {
         return userRepository.findByEmailAndPassword(email, password)?.token ?: throw NotAuthorizedException()
     }
@@ -41,6 +41,7 @@ class GamerService(val userRepository: UserRepository): AuthService {
             throw DuplicateEmailException()
         }
         val user = Gamer(null, name, email, null, generateToken(), mutableSetOf())
+        emailService.sendSignupEmail(user.name, user.email)
         return userRepository.save(user)
     }
 
