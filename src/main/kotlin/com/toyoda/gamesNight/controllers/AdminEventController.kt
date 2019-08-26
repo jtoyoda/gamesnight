@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*
 
 @Controller
 @RequestMapping("/api/v1/gamesNight/admin/events")
+@CrossOrigin
 class AdminEventController(private val gameEventService: GameEventService) {
 
     @GetMapping

@@ -8,6 +8,7 @@ import java.time.DayOfWeek
 
 @Controller
 @RequestMapping("/api/v1/gamesNight/nights")
+@CrossOrigin
 class GameNightController(private val gamesNightService: GameNightService) {
 
     @GetMapping

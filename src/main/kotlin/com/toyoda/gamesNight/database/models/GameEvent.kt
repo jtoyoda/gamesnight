@@ -1,7 +1,7 @@
 package com.toyoda.gamesNight.database.models
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.toyoda.gamesNight.controllers.GamerAttendsGameEventSerializer
+import com.toyoda.gamesNight.controllers.serializers.GamerAttendsGameEventSerializer
 import java.sql.Timestamp
 import javax.persistence.*
 

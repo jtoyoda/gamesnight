@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.*
 
 @Controller
 @RequestMapping("/api/v1/gamesNight/gamers")
+@CrossOrigin
 class GamerController(private val gamerService: GamerService) {
 
     @GetMapping

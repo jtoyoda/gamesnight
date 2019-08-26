@@ -10,6 +10,7 @@ const val BEARER_TOKEN = "Bearer"
 
 @Controller
 @RequestMapping("/api/v1/gamesNight/events")
+@CrossOrigin
 class GamerAttendsEventController(private val gameEventService: GameEventService, private val authService: AuthService) {
     @GetMapping
     fun getEventsForGamer(@RequestHeader("Authorization") bearerToken: String): ResponseEntity<Any> {

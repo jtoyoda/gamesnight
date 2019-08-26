@@ -1,10 +1,8 @@
 package com.toyoda.gamesNight.database.models
 
-import com.fasterxml.jackson.annotation.JsonManagedReference
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import com.toyoda.gamesNight.controllers.GamerInGameNightSerializer
+import com.toyoda.gamesNight.controllers.serializers.GamerInGameNightSerializer
 import com.toyoda.gamesNight.controllers.RepeatEnum
-import org.springframework.data.annotation.CreatedDate
 import java.sql.Timestamp
 import java.time.DayOfWeek
 import javax.persistence.*

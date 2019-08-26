@@ -1,4 +1,4 @@
-package com.toyoda.gamesNight.controllers
+package com.toyoda.gamesNight.controllers.serializers
 
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.JsonSerializer

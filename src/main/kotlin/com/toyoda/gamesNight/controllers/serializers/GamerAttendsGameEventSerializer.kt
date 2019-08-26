@@ -1,4 +1,4 @@
-package com.toyoda.gamesNight.controllers
+package com.toyoda.gamesNight.controllers.serializers
 
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.JsonSerializer
@@ -10,7 +10,8 @@ class GamerAttendsGameEventSerializer: JsonSerializer<MutableList<GamerAttendsGa
         if(value != null) {
             gen!!.writeObject(value.map{gamerAttendsGameEvent ->
                 GamerPlusStatus(gamerAttendsGameEvent.gamer?.name,
-                        gamerAttendsGameEvent.gamer?.email, gamerAttendsGameEvent.attending)})
+                        gamerAttendsGameEvent.gamer?.email, gamerAttendsGameEvent.attending)
+            })
         }
     }
 
