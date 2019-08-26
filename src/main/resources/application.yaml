@@ -1,0 +1,18 @@
+url: http://localhost:3000
+
+spring:
+  # Disabling non-relevant error log
+  jpa:
+    properties:
+      hibernate:
+        temp:
+          use_jdbc_metadata_defaults: false
+        jdbc:
+          lob:
+            non_contextual_creation: true
+  datasource:
+    url: jdbc:postgresql://localhost:5432/games
+    username: postgres
+    password:
+  sendgrid:
+    api-key:
