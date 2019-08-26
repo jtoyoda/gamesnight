@@ -10,7 +10,7 @@ import java.time.temporal.IsoFields
 
 @Service
 class CronService(private val gameNightService: GameNightService, private val gameEventService: GameEventService) {
-    @Scheduled(cron = "@daily")
+    @Scheduled(cron = "0 0 0 * * *")
     fun cronJob() {
         val nights = gameNightService.getNights()
         val now = Instant.now()

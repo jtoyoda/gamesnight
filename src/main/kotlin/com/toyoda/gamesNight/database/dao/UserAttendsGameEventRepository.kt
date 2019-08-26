@@ -8,5 +8,5 @@ import org.springframework.stereotype.Repository
 
 @Repository
 interface UserAttendsGameEventRepository: JpaRepository<GamerAttendsGameEvent, Int> {
-    fun deleteByUserAndEvent(gamer: Gamer, event: GameEvent)
+    fun deleteByGamerAndEvent(gamer: Gamer, event: GameEvent)
 }
