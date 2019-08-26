@@ -8,6 +8,7 @@ import com.toyoda.gamesNight.database.models.GamerAttendsGameEvent
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.sql.Timestamp
+import java.time.Instant
 import javax.transaction.Transactional
 
 @Service
@@ -60,8 +61,10 @@ class GameEventService(private val gameEventRepository: GameEventRepository, pri
         gameEventRepository.delete(event)
     }
 
-    fun getEventsForUser(gamer: Gamer): Set<GameEvent> {
-        return gameEventRepository.findByAttendeesGamerIn(gamer)
+    fun getFutureEventsForUser(gamer: Gamer): Set<GameEvent> {
+        return gameEventRepository.findByAttendeesGamerIn(gamer).filter { gameEvent ->
+            gameEvent.date?.after(Timestamp(Instant.now().toEpochMilli())) ?: false
+        }.toSet()
     }
 
     fun updateEventForUser(id: Int, gamer: Gamer, attending: Boolean?, game: String?): GamerAttendsGameEvent {

@@ -14,7 +14,7 @@ class GamerAttendsEventController(private val gameEventService: GameEventService
     @GetMapping
     fun getEventsForGamer(@RequestHeader("Authorization") bearerToken: String): ResponseEntity<Any> {
         val user = authService.getUser(getTokenFromAuthorizationString(bearerToken))
-        return ResponseEntity.ok(gameEventService.getEventsForUser(user))
+        return ResponseEntity.ok(gameEventService.getFutureEventsForUser(user))
     }
 
     @PutMapping("/{id}")
