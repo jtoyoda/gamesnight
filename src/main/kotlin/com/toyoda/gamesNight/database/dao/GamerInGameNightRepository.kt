@@ -7,6 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface GamerInGameNightRepository: JpaRepository<GamerInGameNight, Int> {
+interface GamerInGameNightRepository : JpaRepository<GamerInGameNight, Int> {
     fun deleteByGamerAndGameNight(oldAttendee: Gamer, gameNight: GameNight)
 }

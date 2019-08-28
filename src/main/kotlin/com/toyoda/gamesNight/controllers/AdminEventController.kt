@@ -17,19 +17,19 @@ class AdminEventController(private val gameEventService: GameEventService) {
 
     @PostMapping
     fun createEvent(@RequestBody event: EventBody): ResponseEntity<Any> {
-        if ((event.night != null && event.attendees != null) || (event.night == null && event.attendees == null)) {
+        if ((event.nights != null && event.attendees != null) || (event.nights == null && event.attendees == null)) {
             return ResponseEntity.badRequest().body(mapOf("error" to "Please pick one of night or attendees"))
         }
         return when {
-            event.night != null -> ResponseEntity.ok(gameEventService.createEvent(event.name, event.night, event.picker, event.date))
-            event.attendees != null -> ResponseEntity.ok(gameEventService.createEvent(event.name, event.attendees, event.picker, event.date))
+            event.nights != null -> ResponseEntity.ok(gameEventService.createEventWithNights(event.name, event.nights, event.picker, event.date))
+            event.attendees != null -> ResponseEntity.ok(gameEventService.createEventWithAttendees(event.name, event.attendees, event.picker, event.date))
             else -> ResponseEntity.status(500).build()
         }
     }
 
     @PutMapping("/{id}")
     fun updateEvent(@RequestBody event: EventUpdateBody, @PathVariable("id") id: Int): ResponseEntity<Any> {
-        gameEventService.updateEvent(id, event.name, event.night, event.attendees, event.picker, event.date)
+        gameEventService.updateEvent(id, event.name, event.night, event.attendees, event.picker, event.date, event.game)
         return ResponseEntity.ok(gameEventService.getEvent(id))
     }
 
@@ -40,6 +40,6 @@ class AdminEventController(private val gameEventService: GameEventService) {
     }
 }
 
-data class EventBody(val name: String, val night: Int?, val attendees: Set<Int>?, val picker: Int, val date: Long)
+data class EventBody(val name: String, val nights: Set<Int>?, val attendees: Set<Int>?, val picker: Int?, val date: Long, val game: String?)
 
-data class EventUpdateBody(val name: String?, val night: Int?, val attendees: Set<Int>?, val picker: Int?, val date: Long?)
+data class EventUpdateBody(val name: String?, val night: Int?, val attendees: Set<Int>?, val picker: Int?, val date: Long?, val game: String?)

@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service
 class GamerAttendsGameEventService(private val userAttendsGameEventRepository: UserAttendsGameEventRepository,
                                    private val emailService: EmailService) {
     fun inviteGamers(attendees: List<Gamer>, event: GameEvent): MutableList<GamerAttendsGameEvent> {
-        return attendees.map {inviteUser(it, event)}.toMutableList()
+        return attendees.map { inviteUser(it, event) }.toMutableList()
     }
 
     fun updateInvites(newAttendees: List<Gamer>, oldAttendees: List<Gamer>, event: GameEvent) {

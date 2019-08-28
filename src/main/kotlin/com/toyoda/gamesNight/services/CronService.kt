@@ -16,16 +16,16 @@ class CronService(private val gameNightService: GameNightService, private val ga
         val now = Instant.now()
         val zonedNow = now.atZone(ZoneOffset.systemDefault())
 
-        for(night in nights) {
+        for (night in nights) {
             val d1i = Instant.ofEpochMilli(night.createdOn!!.time)
 
             val startDate = LocalDateTime.ofInstant(d1i, ZoneId.systemDefault())
             val endDate = LocalDateTime.ofInstant(now, ZoneId.systemDefault())
 
             val weekNumber = ChronoUnit.WEEKS.between(startDate, endDate)
-            if(night.dayOfWeek == zonedNow.dayOfWeek
-                        && (night.repeat == RepeatEnum.WEEKLY ||
-                        (night.repeat == RepeatEnum.BIWEEKLY && (weekNumber % 2) == 0L))) {
+            if (night.dayOfWeek == zonedNow.dayOfWeek
+                    && (night.repeat == RepeatEnum.WEEKLY ||
+                            (night.repeat == RepeatEnum.BIWEEKLY && (weekNumber % 2) == 0L))) {
                 bookEvent(now, night, weekNumber)
             }
         }
@@ -43,7 +43,7 @@ class CronService(private val gameNightService: GameNightService, private val ga
                 .withHour(gameNight.hour ?: 18)
                 .withMinute(gameNight.minute ?: 30)
                 .toInstant().toEpochMilli()
-        gameEventService.createEvent(getName(gameNight, zonedNow), gameNight, picker?.gamer, date)
+        gameEventService.createEventWithNight(getName(gameNight, zonedNow), gameNight, picker?.gamer, date)
     }
 
     private fun getName(gameNight: GameNight, now: ZonedDateTime): String {

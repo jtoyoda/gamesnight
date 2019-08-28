@@ -6,6 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface GameEventRepository: JpaRepository<GameEvent, Int> {
+interface GameEventRepository : JpaRepository<GameEvent, Int> {
     fun findByAttendeesGamerIn(gamer: Gamer): Set<GameEvent>
 }

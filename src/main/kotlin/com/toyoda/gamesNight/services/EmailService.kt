@@ -8,7 +8,6 @@ import org.springframework.stereotype.Service
 import java.io.IOException
 import java.sql.Timestamp
 import java.time.Instant
-import java.time.ZoneId
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
@@ -45,7 +44,8 @@ class EmailService(val sendGrid: SendGrid) {
     }
 
     fun notifyGameUpdate(email: String, event: GameEvent) {
-        val contentString = "${event.picker?.name ?: "The Sommerlier"} has chosen ${event.game} for ${getDateFormat(event.date)}: ${event.name}"
+        val contentString = "${event.picker?.name
+                ?: "The Sommerlier"} has chosen ${event.game} for ${getDateFormat(event.date)}: ${event.name}"
         sendEmail("${getDateFormat(event.date)}: ${event.name} presents ${event.game}", "<html><body>$contentString</body></html>", email)
 
     }

@@ -5,7 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository
 import org.springframework.stereotype.Repository
 
 @Repository
-interface GamerRepository: JpaRepository<Gamer, Int> {
+interface GamerRepository : JpaRepository<Gamer, Int> {
     fun findByEmailAndPassword(email: String, password: String): Gamer?
     fun findByToken(s: String): Gamer?
     fun findByEmail(email: String): Gamer?

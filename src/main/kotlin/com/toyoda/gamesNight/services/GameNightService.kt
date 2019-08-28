@@ -39,15 +39,15 @@ class GameNightService(private val gameNightRepository: GameNightRepository, pri
         gameNight.dayOfWeek = dayOfWeek ?: gameNight.dayOfWeek
         if (attendeeIds != null) {
             val attendees = gamerService.findByIdIn(attendeeIds)
-            val currentAttendees = gameNight.attendees.map{it.gamer}
-            for(attendee in attendees) {
-                if(!currentAttendees.contains(attendee)) {
+            val currentAttendees = gameNight.attendees.map { it.gamer }
+            for (attendee in attendees) {
+                if (!currentAttendees.contains(attendee)) {
                     val newGamer = gamerInGameNightRepository.save(GamerInGameNight(null, attendee, gameNight))
                     gameNight.attendees.add(newGamer)
                 }
             }
-            for(oldAttendee in currentAttendees) {
-                if(!attendees.contains(oldAttendee)) {
+            for (oldAttendee in currentAttendees) {
+                if (!attendees.contains(oldAttendee)) {
                     gamerInGameNightRepository.deleteByGamerAndGameNight(oldAttendee, gameNight)
                     gameNight.attendees.removeIf {
                         it.gamer == oldAttendee
@@ -68,6 +68,10 @@ class GameNightService(private val gameNightRepository: GameNightRepository, pri
     fun deleteGamesNight(id: Int) {
         val gameNight = findById(id) ?: throw InvalidIdException()
         gameNightRepository.delete(gameNight)
+    }
+
+    fun findByIdIn(nights: Set<Int>): Set<GameNight> {
+        return gameNightRepository.findAllById(nights).toSet()
     }
 
 }
