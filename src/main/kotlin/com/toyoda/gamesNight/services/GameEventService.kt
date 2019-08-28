@@ -15,7 +15,8 @@ import javax.transaction.Transactional
 @Transactional
 class GameEventService(private val gameEventRepository: GameEventRepository, private val gamerService: GamerService,
                        private val gameNightService: GameNightService,
-                       private val gamerAttendsGameEventService: GamerAttendsGameEventService){
+                       private val gamerAttendsGameEventService: GamerAttendsGameEventService,
+                       private val emailService: EmailService){
     fun createEvent(name: String, attendees: Set<Int>, picker: Int, date: Long): GameEvent {
         val event = gameEventRepository.save(GameEvent(null, name, null, Timestamp(date), mutableListOf(), gamerService.findById(picker)))
         val usersInvited = gamerAttendsGameEventService.inviteGamers(gamerService.findByIdIn(attendees), event)
@@ -58,6 +59,7 @@ class GameEventService(private val gameEventRepository: GameEventRepository, pri
 
     fun deleteEvent(id: Int) {
         val event = gameEventRepository.findByIdOrNull(id) ?: throw InvalidIdException()
+        event.attendees?.mapNotNull { it.gamer?.email }.map { emailService.uninviteUser(it, event) }
         gameEventRepository.delete(event)
     }
 
@@ -73,6 +75,7 @@ class GameEventService(private val gameEventRepository: GameEventRepository, pri
         userAttendsGameEvent.attending = attending ?: userAttendsGameEvent.attending
         if (event.picker == gamer && game != null) {
             event.game = game
+            event.attendees.mapNotNull { it.gamer?.email }.map{emailService.notifyGameUpdate(it, event)}
         }
         return userAttendsGameEvent
     }

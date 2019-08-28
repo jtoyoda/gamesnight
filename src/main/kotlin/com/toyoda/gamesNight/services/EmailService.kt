@@ -6,8 +6,10 @@ import com.toyoda.gamesNight.database.models.Gamer
 import org.springframework.beans.factory.annotation.Value
 import org.springframework.stereotype.Service
 import java.io.IOException
+import java.sql.Timestamp
 import java.time.Instant
 import java.time.ZoneId
+import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 
 @Service
@@ -19,30 +21,36 @@ class EmailService(val sendGrid: SendGrid) {
 
     fun inviteUser(event: GameEvent, gamer: Gamer) {
         gamer.email?.let {
-            val dateString = event.date?.let { timestamp ->
-                val instant = Instant.ofEpochMilli(timestamp.time).atZone(ZoneId.systemDefault())
-                instant.format(DateTimeFormatter.ofPattern("MMM dd"))
-            } ?: "soon"
-            var contentString = "Please respond <a href='$url' target='_'>here</a>."
+            var contentString = "<div>Please respond to ${getDateFormat(event.date)}: ${event.name} <a href='$url' target='_'>here</a>.</div>"
             if (event.picker == gamer) {
-                contentString += "\nYou are picking the game this week!"
+                contentString += "<div>You are the Sommerlier this week!</div>"
             }
-            sendEmail("New Gaming Event ${event.name} on $dateString", "<html><body>$contentString</body></html>", it)
+            sendEmail("${getDateFormat(event.date)}: ${event.name} - You are invited! ", "<html><body>$contentString</body></html>", it)
         }
     }
 
-    fun uninviteUser(event: GameEvent, gamer: Gamer) {
-        gamer.email?.let {
-            val dateString = event.date?.let {
-                val instant = Instant.ofEpochMilli(it.time).atZone(ZoneId.systemDefault())
-                instant.format(DateTimeFormatter.ofPattern("MMM dd"))
-            } ?: ""
-            val contentString = "This event is no longer occurring. See other events <a href='$url' target='_'>here</a> "
-            sendEmail("Gaming Event ${event.name} $dateString Cancelled", "<html><body>$contentString</body></html>", it)
+    fun uninviteUser(email: String, event: GameEvent) {
+        val contentString = "Gaming Event ${getDateFormat(event.date)}: ${event.name} is no longer occurring. See other events <a href='$url' target='_'>here</a> "
+        sendEmail("Gaming Event ${getDateFormat(event.date)}: ${event.name} has been cancelled",
+                "<html><body>$contentString</body></html>",
+                email
+        )
+    }
+
+    fun sendSignupEmail(name: String?, email: String?) {
+        if (name != null && email != null) {
+            val contentString = "Please signup <a href='$url/signup?email=$email' target='_'>here</a>."
+            sendEmail("Your invited for games night", "<html><body>$contentString</body></html>", email)
         }
     }
 
-    fun sendEmail(subject: String, htmlContent: String, email: String) {
+    fun notifyGameUpdate(email: String, event: GameEvent) {
+        val contentString = "${event.picker?.name ?: "The Sommerlier"} has chosen ${event.game} for ${getDateFormat(event.date)}: ${event.name}"
+        sendEmail("${getDateFormat(event.date)}: ${event.name} presents ${event.game}", "<html><body>$contentString</body></html>", email)
+
+    }
+
+    private fun sendEmail(subject: String, htmlContent: String, email: String) {
         if (sendEmail.toBoolean()) {
             val from = Email("boardGames@donotrespond.com")
 
@@ -62,10 +70,10 @@ class EmailService(val sendGrid: SendGrid) {
         }
     }
 
-    fun sendSignupEmail(name: String?, email: String?) {
-        if (name != null && email != null) {
-            val contentString = "Please signup <a href='$url/signup?email=$email' target='_'>here</a>."
-            sendEmail("Your invited for games night", "<html><body>$contentString</body></html>", email)
-        }
+    private fun getDateFormat(timestamp: Timestamp?): String {
+        return timestamp?.let {
+            val instant = Instant.ofEpochMilli(it.time).atOffset(ZoneOffset.UTC)
+            instant.format(DateTimeFormatter.ofPattern("MMM Do h:mma"))
+        } ?: "Date TBD"
     }
 }

@@ -27,9 +27,10 @@ class GamerAttendsGameEventService(private val userAttendsGameEventRepository: U
     }
 
     private fun uninviteUser(gamer: Gamer, event: GameEvent) {
-        emailService.uninviteUser(event, gamer)
+        gamer.email?.let {
+            emailService.uninviteUser(it, event)
+        }
         userAttendsGameEventRepository.deleteByGamerAndEvent(gamer, event)
-
     }
 
     private fun inviteUser(gamer: Gamer, event: GameEvent): GamerAttendsGameEvent {
