@@ -9,7 +9,7 @@ class GamerAttendsGameEventSerializer: JsonSerializer<MutableList<GamerAttendsGa
     override fun serialize(value: MutableList<GamerAttendsGameEvent>?, gen: JsonGenerator?, serializers: SerializerProvider?) {
         if(value != null) {
             gen!!.writeObject(value.map{gamerAttendsGameEvent ->
-                GamerPlusStatus(gamerAttendsGameEvent.gamer?.name,
+                GamerPlusStatus(gamerAttendsGameEvent.gamer?.id, gamerAttendsGameEvent.gamer?.name,
                         gamerAttendsGameEvent.gamer?.email, gamerAttendsGameEvent.attending)
             })
         }
@@ -17,4 +17,4 @@ class GamerAttendsGameEventSerializer: JsonSerializer<MutableList<GamerAttendsGa
 
 }
 
-data class GamerPlusStatus(val name: String?, val email: String?, val attending: Boolean)
+data class GamerPlusStatus(val id: Int?, val name: String?, val email: String?, val attending: Boolean)

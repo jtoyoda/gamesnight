@@ -10,7 +10,7 @@ class NotAuthorizedException() : Exception()
 
 @Service
 interface AuthService {
-    fun login(email: String, password: String): String
+    fun login(email: String, password: String): Gamer
 
     fun signup(email: String, password: String)
 

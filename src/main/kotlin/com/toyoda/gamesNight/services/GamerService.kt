@@ -18,8 +18,8 @@ val STRING_CHARACTERS = ('0'..'z').toList().toTypedArray()
 @Service
 @Transactional
 class GamerService(val gamerRepository: GamerRepository, private val emailService: EmailService): AuthService {
-    override fun login(email: String, password: String): String {
-        return gamerRepository.findByEmailAndPassword(email, password)?.token ?: throw NotAuthorizedException()
+    override fun login(email: String, password: String): Gamer {
+        return gamerRepository.findByEmailAndPassword(email, password) ?: throw NotAuthorizedException()
     }
 
     override fun signup(email: String, password: String) {
