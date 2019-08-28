@@ -21,8 +21,8 @@ class AdminEventController(private val gameEventService: GameEventService) {
             return ResponseEntity.badRequest().body(mapOf("error" to "Please pick one of night or attendees"))
         }
         return when {
-            event.nights != null -> ResponseEntity.ok(gameEventService.createEventWithNights(event.name, event.nights, event.picker, event.date))
-            event.attendees != null -> ResponseEntity.ok(gameEventService.createEventWithAttendees(event.name, event.attendees, event.picker, event.date))
+            event.nights != null -> ResponseEntity.ok(gameEventService.createEventWithNights(event.name, event.nights, event.picker, event.date, event.game))
+            event.attendees != null -> ResponseEntity.ok(gameEventService.createEventWithAttendees(event.name, event.attendees, event.picker, event.date, event.game))
             else -> ResponseEntity.status(500).build()
         }
     }
