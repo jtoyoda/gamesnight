@@ -65,7 +65,7 @@ class GameEventService(private val gameEventRepository: GameEventRepository, pri
 
     fun deleteEvent(id: Int) {
         val event = gameEventRepository.findByIdOrNull(id) ?: throw InvalidIdException()
-        event.attendees?.mapNotNull { it.gamer?.email }.map { emailService.uninviteUser(it, event) }
+        event.attendees.mapNotNull { it.gamer?.email }.map { emailService.uninviteUser(it, event) }
         gameEventRepository.delete(event)
     }
 
