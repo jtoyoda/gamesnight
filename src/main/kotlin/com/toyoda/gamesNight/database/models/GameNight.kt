@@ -20,9 +20,12 @@ data class GameNight(
         var repeat: RepeatEnum?,
         var hour: Int?,
         var minute: Int?,
-        @OneToMany(mappedBy = "gameNight")
+        @OneToMany(mappedBy = "gameNight", fetch = FetchType.EAGER)
         @JsonSerialize(using = GamerInGameNightSerializer::class)
         var attendees: MutableList<GamerInGameNight>,
         var createdOn: Timestamp?
 ) {
+        override fun toString(): String {
+                return "GameNight(id=$id, name=$name, dayOfWeek=$dayOfWeek, repeat=$repeat, hour=$hour, minute=$minute, attendees=${attendees.map { it.gamer }}, createdOn=$createdOn)"
+        }
 }

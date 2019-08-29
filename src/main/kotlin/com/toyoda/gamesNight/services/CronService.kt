@@ -10,7 +10,7 @@ import java.time.temporal.IsoFields
 
 @Service
 class CronService(private val gameNightService: GameNightService, private val gameEventService: GameEventService) {
-    @Scheduled(cron = "0 0 0 * * *")
+    @Scheduled(cron = "0 0 12 * * *")
     fun cronJob() {
         val nights = gameNightService.getNights()
         val now = Instant.now()
@@ -33,9 +33,9 @@ class CronService(private val gameNightService: GameNightService, private val ga
 
     private fun bookEvent(now: Instant, gameNight: GameNight, weekNumber: Long) {
         val picker = if (gameNight.attendees.isEmpty()) {
-            gameNight.attendees[(weekNumber % gameNight.attendees.size).toInt()]
-        } else {
             null
+        } else {
+            gameNight.attendees[(weekNumber % gameNight.attendees.size).toInt()]
         }
         val zonedNow = now.atZone(ZoneId.systemDefault())
         val date = zonedNow
