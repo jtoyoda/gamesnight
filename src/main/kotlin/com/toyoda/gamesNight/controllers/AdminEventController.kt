@@ -29,7 +29,7 @@ class AdminEventController(private val gameEventService: GameEventService) {
 
     @PutMapping("/{id}")
     fun updateEvent(@RequestBody event: EventUpdateBody, @PathVariable("id") id: Int): ResponseEntity<Any> {
-        gameEventService.updateEvent(id, event.name, event.night, event.attendees, event.picker, event.date, event.game)
+        gameEventService.updateEvent(id, event.name, event.attendees, event.picker, event.date, event.game)
         return ResponseEntity.ok(gameEventService.getEvent(id))
     }
 
@@ -42,4 +42,4 @@ class AdminEventController(private val gameEventService: GameEventService) {
 
 data class EventBody(val name: String, val nights: Set<Int>?, val attendees: Set<Int>?, val picker: Int?, val date: Long, val game: String?)
 
-data class EventUpdateBody(val name: String?, val night: Int?, val attendees: Set<Int>?, val picker: Int?, val date: Long?, val game: String?)
+data class EventUpdateBody(val name: String?, val attendees: Set<Int>?, val picker: Int?, val date: Long?, val game: String?)
