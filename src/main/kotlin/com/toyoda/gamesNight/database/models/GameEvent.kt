@@ -20,4 +20,8 @@ data class GameEvent(
         @ManyToOne
         @JoinColumn(name = "picker_id")
         var picker: Gamer?
-)
+) {
+        override fun toString(): String {
+                return "GameEvent(name=$name, game=$game, date=$date, attendees=${attendees.map { it.id }})"
+        }
+}

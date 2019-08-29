@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service
 import java.io.IOException
 import java.sql.Timestamp
 import java.time.Instant
-import java.time.ZoneOffset
+import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 
 @Service
@@ -22,15 +22,18 @@ class EmailService(val sendGrid: SendGrid) {
         gamer.email?.let {
             var contentString = "<div>Please respond to ${getDateFormat(event.date)}: ${event.name} <a href='$url' target='_'>here</a>.</div>"
             if (event.picker == gamer) {
-                contentString += "<div>You are the Sommerlier this week!</div>"
+                contentString += "<div>You are the Sommelier this week!</div>"
+            } else if (event.game != null) {
+                contentString += "<div>${event.picker?.name
+                        ?: "The Sommelier"} has chosen <strong>${event.game}</strong></div>"
             }
             sendEmail("${getDateFormat(event.date)}: ${event.name} - You are invited! ", "<html><body>$contentString</body></html>", it)
         }
     }
 
     fun uninviteUser(email: String, event: GameEvent) {
-        val contentString = "Gaming Event ${getDateFormat(event.date)}: ${event.name} is no longer occurring. See other events <a href='$url' target='_'>here</a> "
-        sendEmail("Gaming Event ${getDateFormat(event.date)}: ${event.name} has been cancelled",
+        val contentString = "${getDateFormat(event.date)}: ${event.name} is no longer occurring. See other events <a href='$url' target='_'>here</a> "
+        sendEmail("${getDateFormat(event.date)}: ${event.name} has been cancelled",
                 "<html><body>$contentString</body></html>",
                 email
         )
@@ -43,11 +46,23 @@ class EmailService(val sendGrid: SendGrid) {
         }
     }
 
-    fun notifyGameUpdate(email: String, event: GameEvent) {
-        val contentString = "${event.picker?.name
-                ?: "The Sommerlier"} has chosen ${event.game} for ${getDateFormat(event.date)}: ${event.name}"
-        sendEmail("${getDateFormat(event.date)}: ${event.name} presents ${event.game}", "<html><body>$contentString</body></html>", email)
+    fun notifyEventUpdate(email: String, event: GameEvent, gameChanged: Boolean, timeChanged: Boolean, pickerChanged: Boolean) {
+        val newGameStringContent = "${event.picker?.name
+                ?: "The Sommelier"} has chosen <strong>${event.game}</strong>"
+        val newTimeContent = "The time has been updated to ${getDateFormat(event.date)}."
+        val pickerContent = if (email == event.picker?.email)
+            "You are now the Sommelier. Choose your game <a href='$url/signup?email=$email' target='_'>here</a>"
+        else
+            "${event.picker?.name ?: "Nobody"} is now the Sommelier."
 
+        var contentString = if (gameChanged) newGameStringContent else ""
+        if (timeChanged) {
+            contentString = "$contentString$newTimeContent. "
+        }
+        if (pickerChanged) {
+            contentString = "$contentString$pickerContent. "
+        }
+        sendEmail("Update! ${if (timeChanged) "New Time " else ""}${getDateFormat(event.date)}: ${event.name} presents ${event.game}", "<html><body>$contentString</body></html>", email)
     }
 
     private fun sendEmail(subject: String, htmlContent: String, email: String) {
@@ -72,8 +87,8 @@ class EmailService(val sendGrid: SendGrid) {
 
     private fun getDateFormat(timestamp: Timestamp?): String {
         return timestamp?.let {
-            val instant = Instant.ofEpochMilli(it.time).atOffset(ZoneOffset.UTC)
-            instant.format(DateTimeFormatter.ofPattern("MMM Do h:mma"))
+            val instant = Instant.ofEpochMilli(it.time).atZone(ZoneId.systemDefault())
+            instant.format(DateTimeFormatter.ofPattern("MMM d h:ma"))
         } ?: "Date TBD"
     }
 }
