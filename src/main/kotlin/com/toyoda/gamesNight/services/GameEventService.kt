@@ -96,4 +96,10 @@ class GameEventService(private val gameEventRepository: GameEventRepository, pri
         event.attendees = usersInvited
         return gameEventRepository.save(event)
     }
+
+    fun removePickerFromAllEvents(gamer: Gamer) {
+        val eventsIsPicker = gameEventRepository.findByPicker(gamer).forEach {
+            it.picker = null
+        }
+    }
 }

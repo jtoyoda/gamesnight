@@ -17,15 +17,16 @@ val STRING_CHARACTERS = ('0'..'z').toList().toTypedArray()
 
 @Service
 @Transactional
-class GamerService(val gamerRepository: GamerRepository, private val emailService: EmailService) : AuthService {
+class GamerService(val gamerRepository: GamerRepository, private val eventService: GameEventService,
+                   private val emailService: EmailService) : AuthService {
     override fun login(email: String, password: String): Gamer {
         return gamerRepository.findByEmailAndPassword(email, password) ?: throw NotAuthorizedException()
     }
 
     override fun signup(email: String, password: String) {
-        val user = gamerRepository.findByEmail(email) ?: throw InvalidIdException()
-        user.password = password
-        gamerRepository.save(user)
+        val gamer = gamerRepository.findByEmail(email) ?: throw InvalidIdException()
+        gamer.password = password
+        gamerRepository.save(gamer)
     }
 
     override fun getUser(tokenFromAuthorizationString: String?): Gamer {
@@ -41,21 +42,22 @@ class GamerService(val gamerRepository: GamerRepository, private val emailServic
         gamerRepository.findByEmail(email)?.let {
             throw DuplicateEmailException()
         }
-        val user = Gamer(null, name, email, null, generateToken())
-        emailService.sendSignupEmail(user.name, user.email)
-        return gamerRepository.save(user)
+        val gamer = Gamer(null, name, email, null, generateToken())
+        emailService.sendSignupEmail(gamer.name, gamer.email)
+        return gamerRepository.save(gamer)
     }
 
     fun updateGamer(id: Int, name: String?, email: String?): Gamer {
-        val user = gamerRepository.findByIdOrNull(id) ?: throw InvalidIdException()
-        user.name = name ?: user.name
-        user.email = email ?: user.email
-        return gamerRepository.save(user)
+        val gamer = gamerRepository.findByIdOrNull(id) ?: throw InvalidIdException()
+        gamer.name = name ?: gamer.name
+        gamer.email = email ?: gamer.email
+        return gamerRepository.save(gamer)
     }
 
     fun deleteGamer(id: Int) {
-        val user = gamerRepository.findByIdOrNull(id) ?: throw InvalidIdException()
-        gamerRepository.delete(user)
+        val gamer = gamerRepository.findByIdOrNull(id) ?: throw InvalidIdException()
+        eventService.removePickerFromAllEvents(gamer)
+        gamerRepository.delete(gamer)
     }
 
     private fun generateToken(): String {

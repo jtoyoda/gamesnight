@@ -8,4 +8,5 @@ import org.springframework.stereotype.Repository
 @Repository
 interface GameEventRepository : JpaRepository<GameEvent, Int> {
     fun findByAttendeesGamerIn(gamer: Gamer): Set<GameEvent>
+    fun findByPicker(gamer: Gamer): Set<GameEvent>
 }
