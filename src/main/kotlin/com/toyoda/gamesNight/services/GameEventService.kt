@@ -72,8 +72,10 @@ class GameEventService(private val gameEventRepository: GameEventRepository, pri
         return gameEventRepository.save(event)
     }
 
-    fun getAllEvents(): Set<GameEvent> {
-        return gameEventRepository.findAll().toSet()
+    fun getAllFutureEvents(): Set<GameEvent> {
+        return gameEventRepository.findAll().filter { gameEvent ->
+            gameEvent.date?.after(Timestamp(Instant.now().toEpochMilli())) ?: false
+        }.toSet()
     }
 
     fun deleteEvent(id: Int) {

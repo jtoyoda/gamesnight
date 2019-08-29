@@ -12,7 +12,7 @@ class AdminEventController(private val gameEventService: GameEventService) {
 
     @GetMapping
     fun getEvents(): ResponseEntity<Any> {
-        return ResponseEntity.ok(gameEventService.getAllEvents())
+        return ResponseEntity.ok(gameEventService.getAllFutureEvents())
     }
 
     @PostMapping
