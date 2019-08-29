@@ -2,6 +2,7 @@ package com.toyoda.gamesNight.services
 
 import com.toyoda.gamesNight.database.dao.GamerRepository
 import com.toyoda.gamesNight.database.models.Gamer
+import org.springframework.context.annotation.Lazy
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.http.HttpStatus
 import org.springframework.stereotype.Service
@@ -17,7 +18,8 @@ val STRING_CHARACTERS = ('0'..'z').toList().toTypedArray()
 
 @Service
 @Transactional
-class GamerService(val gamerRepository: GamerRepository, private val eventService: GameEventService,
+class GamerService(private val gamerRepository: GamerRepository,
+                   @Lazy private val eventService: GameEventService,
                    private val emailService: EmailService) : AuthService {
     override fun login(email: String, password: String): Gamer {
         return gamerRepository.findByEmailAndPassword(email, password) ?: throw NotAuthorizedException()

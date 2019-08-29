@@ -98,7 +98,7 @@ class GameEventService(private val gameEventRepository: GameEventRepository, pri
     }
 
     fun removePickerFromAllEvents(gamer: Gamer) {
-        val eventsIsPicker = gameEventRepository.findByPicker(gamer).forEach {
+        gameEventRepository.findByPicker(gamer).forEach {
             it.picker = null
         }
     }
