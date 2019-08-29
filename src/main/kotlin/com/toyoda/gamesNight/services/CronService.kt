@@ -7,6 +7,9 @@ import org.springframework.stereotype.Service
 import java.time.*
 import java.time.temporal.ChronoUnit
 import java.time.temporal.IsoFields
+import java.util.*
+
+val zoneId: ZoneId = TimeZone.getTimeZone("America/Denver").toZoneId()
 
 @Service
 class CronService(private val gameNightService: GameNightService, private val gameEventService: GameEventService) {
@@ -14,13 +17,13 @@ class CronService(private val gameNightService: GameNightService, private val ga
     fun cronJob() {
         val nights = gameNightService.getNights()
         val now = Instant.now()
-        val zonedNow = now.atZone(ZoneOffset.systemDefault())
+        val zonedNow = now.atZone(zoneId)
 
         for (night in nights) {
             val d1i = Instant.ofEpochMilli(night.createdOn!!.time)
 
-            val startDate = LocalDateTime.ofInstant(d1i, ZoneId.systemDefault())
-            val endDate = LocalDateTime.ofInstant(now, ZoneId.systemDefault())
+            val startDate = LocalDateTime.ofInstant(d1i, zoneId)
+            val endDate = LocalDateTime.ofInstant(now, zoneId)
 
             val weekNumber = ChronoUnit.WEEKS.between(startDate, endDate)
             if (night.dayOfWeek == zonedNow.dayOfWeek
@@ -37,7 +40,7 @@ class CronService(private val gameNightService: GameNightService, private val ga
         } else {
             gameNight.attendees[(weekNumber % gameNight.attendees.size).toInt()]
         }
-        val zonedNow = now.atZone(ZoneId.systemDefault())
+        val zonedNow = now.atZone(zoneId)
         val date = zonedNow
                 .plusDays(7)
                 .withHour(gameNight.hour ?: 18)

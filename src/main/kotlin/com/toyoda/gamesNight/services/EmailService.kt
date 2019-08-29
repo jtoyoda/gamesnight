@@ -10,6 +10,7 @@ import java.sql.Timestamp
 import java.time.Instant
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
+import java.util.*
 
 @Service
 class EmailService(val sendGrid: SendGrid) {
@@ -41,8 +42,8 @@ class EmailService(val sendGrid: SendGrid) {
 
     fun sendSignupEmail(name: String?, email: String?) {
         if (name != null && email != null) {
-            val contentString = "Please signup <a href='$url/signup?email=$email' target='_'>here</a>."
-            sendEmail("Your invited for games night", "<html><body>$contentString</body></html>", email)
+            val contentString = "Please complete your registration <a href='$url/signup?email=$email' target='_'>here</a>."
+            sendEmail("Your invited to a games night scheduler", "<html><body>$contentString</body></html>", email)
         }
     }
 
@@ -87,7 +88,7 @@ class EmailService(val sendGrid: SendGrid) {
 
     private fun getDateFormat(timestamp: Timestamp?): String {
         return timestamp?.let {
-            val instant = Instant.ofEpochMilli(it.time).atZone(ZoneId.systemDefault())
+            val instant = Instant.ofEpochMilli(it.time).atZone(TimeZone.getTimeZone("America/Denver").toZoneId())
             instant.format(DateTimeFormatter.ofPattern("MMM d h:ma"))
         } ?: "Date TBD"
     }
