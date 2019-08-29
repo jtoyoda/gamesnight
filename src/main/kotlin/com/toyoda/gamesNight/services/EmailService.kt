@@ -89,7 +89,7 @@ class EmailService(val sendGrid: SendGrid) {
     private fun getDateFormat(timestamp: Timestamp?): String {
         return timestamp?.let {
             val instant = Instant.ofEpochMilli(it.time).atZone(TimeZone.getTimeZone("America/Denver").toZoneId())
-            instant.format(DateTimeFormatter.ofPattern("MMM d h:ma"))
+            instant.format(DateTimeFormatter.ofPattern("MMM d h:mma"))
         } ?: "Date TBD"
     }
 }
