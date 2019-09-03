@@ -52,7 +52,7 @@ class EmailService(val sendGrid: SendGrid) {
                 ?: "The Sommelier"} has chosen <strong>${event.game}</strong>"
         val newTimeContent = "The time has been updated to ${getDateFormat(event.date)}."
         val pickerContent = if (email == event.picker?.email)
-            "You are now the Sommelier. Choose your game <a href='$url/signup?email=$email' target='_'>here</a>"
+            "You are now the Sommelier."
         else
             "${event.picker?.name ?: "Nobody"} is now the Sommelier."
 
@@ -63,6 +63,7 @@ class EmailService(val sendGrid: SendGrid) {
         if (pickerChanged) {
             contentString = "$contentString$pickerContent. "
         }
+        contentString = "$contentString. See the event <a href='$url' target='_'>here</a>"
         sendEmail("Update! ${if (timeChanged) "New Time " else ""}${getDateFormat(event.date)}: ${event.name} presents ${event.game}", "<html><body>$contentString</body></html>", email)
     }
 
