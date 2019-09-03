@@ -17,4 +17,4 @@ class GamerAttendsGameEventSerializer : JsonSerializer<MutableList<GamerAttendsG
 
 }
 
-data class GamerPlusStatus(val id: Int?, val name: String?, val email: String?, val attending: Boolean)
+data class GamerPlusStatus(val id: Int?, val name: String?, val email: String?, val attending: Boolean?)
