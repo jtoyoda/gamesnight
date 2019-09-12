@@ -52,7 +52,7 @@ class GameNightController(private val gamesNightService: GameNightService) {
 
     @GetMapping("/{id}/upcoming")
     fun getUpcomingDates(@PathVariable("id") id: Int): ResponseEntity<Any> {
-        return ResponseEntity.ok(gamesNightService.getUpcomingNights(id))
+        return ResponseEntity.ok(gamesNightService.getUpcomingUnscheduledNights(id))
     }
 }
 

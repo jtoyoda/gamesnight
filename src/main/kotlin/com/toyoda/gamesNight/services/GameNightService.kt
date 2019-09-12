@@ -99,14 +99,19 @@ class GameNightService(private val gameNightRepository: GameNightRepository, pri
 
     }
 
-    fun getUpcomingNights(id: Int): Map<Long, Long> {
+    fun getUpcomingUnscheduledNights(id: Int): Map<Long, Long> {
         val gameNight = findById(id) ?: throw InvalidIdException()
         var now = Instant.now()
-        return (0..8).associate { i ->
+        var first: Long? = null
+        val ret = (0..9).associate { i ->
             val time = getNextEvent(now, gameNight)
             now = Instant.ofEpochMilli(time)
             val weekNumber = getWeeksElapsed(gameNight, now)
+            if (first == null) {
+                first = weekNumber
+            }
             weekNumber to time
         }
+        return ret.filterKeys { it != first }
     }
 }

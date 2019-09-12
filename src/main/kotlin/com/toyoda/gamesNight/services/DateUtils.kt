@@ -26,7 +26,7 @@ fun getNextEvent(now: Instant, gameNight: GameNight): Long {
             .toInstant().toEpochMilli()
 }
 
-private fun getDaysToAdd(currentDate: DayOfWeek, idealDay: DayOfWeek?): Long {
+fun getDaysToAdd(currentDate: DayOfWeek, idealDay: DayOfWeek?): Long {
     if (idealDay != null) {
         val numDays = idealDay.ordinal - currentDate.ordinal
         return (if (numDays > 0) numDays else 7 + numDays).toLong()
