@@ -20,7 +20,7 @@ fun getWeeksElapsed(gameNight: GameNight, endInstant: Instant): Long {
 fun getNextEvent(now: Instant, gameNight: GameNight): Long {
     val zonedNow = now.atZone(zoneId)
     return zonedNow
-            .plusDays(7)
+            .plusDays(getDaysToAdd(zonedNow.dayOfWeek, gameNight.dayOfWeek))
             .withHour(gameNight.hour ?: DEFAULT_HOUR)
             .withMinute(gameNight.minute ?: DEFAULT_MINUTE)
             .toInstant().toEpochMilli()

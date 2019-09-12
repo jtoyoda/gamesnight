@@ -6,6 +6,7 @@ import com.toyoda.gamesNight.zoneId
 import org.springframework.scheduling.annotation.Scheduled
 import org.springframework.stereotype.Service
 import java.time.*
+import java.time.temporal.ChronoUnit
 import java.util.*
 
 const val DEFAULT_HOUR = 18
@@ -33,13 +34,13 @@ class CronService(private val gameNightService: GameNightService, private val ga
     private fun bookEvent(now: Instant, gameNight: GameNight, weekNumber: Long) {
         gameNight.id?.let { gameNightId ->
             val picker = gameNightService.getPickerForGameNightForWeek(gameNightId, weekNumber + 1)
-            val zonedNow = now.atZone(zoneId)
-            val date = getNextEvent(now, gameNight)
-            gameEventService.createEventWithNight(getName(gameNight, zonedNow, weekNumber), gameNight, picker, date)
+            // Get next event will return the one today so get the next one
+            val date = getNextEvent(now.plus(1, ChronoUnit.DAYS), gameNight)
+            gameEventService.createEventWithNight(getName(gameNight, weekNumber), gameNight, picker, date)
         }
     }
 
-    private fun getName(gameNight: GameNight, now: ZonedDateTime, weekNumber: Long): String {
+    private fun getName(gameNight: GameNight, weekNumber: Long): String {
         return "${gameNight.name}: Week $weekNumber"
     }
 }
