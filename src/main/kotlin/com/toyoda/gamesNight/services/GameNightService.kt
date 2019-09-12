@@ -88,9 +88,13 @@ class GameNightService(private val gameNightRepository: GameNightRepository, pri
         return gameNightPickerService.getPickerForGameNightForWeek(gameNight, weekNumber)
     }
 
-    fun setPickerForNight(id: Int, gamerId: Int, weekNumber: Long): GameNightPicker {
+    fun setPickerForNight(id: Int, gamerId: Int, weekNumber: Long): GameNightPicker? {
         val gameNight = findById(id) ?: throw InvalidIdException()
-        val gamer = gamerService.findById(gamerId) ?: throw InvalidIdException()
+        val gamer = if (gamerId == -1) {
+             null
+        } else {
+            gamerService.findById(gamerId) ?: throw InvalidIdException()
+        }
         return gameNightPickerService.updatePickerForGameNight(gameNight, weekNumber, gamer)
 
     }

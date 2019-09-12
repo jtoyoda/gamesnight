@@ -43,7 +43,11 @@ class GameNightController(private val gamesNightService: GameNightService) {
     @PutMapping("/{id}/pickers")
     fun setPicker(@PathVariable("id") id: Int, @RequestBody gameNightPickerBody: GameNightPickerBody): ResponseEntity<Any> {
         val picker = gamesNightService.setPickerForNight(id, gameNightPickerBody.gamerId, gameNightPickerBody.weekNumber)
-        return ResponseEntity.ok(picker)
+        return if (picker != null) {
+            ResponseEntity.ok(picker)
+        } else {
+            ResponseEntity.noContent().build()
+        }
     }
 
     @GetMapping("/{id}/upcoming")

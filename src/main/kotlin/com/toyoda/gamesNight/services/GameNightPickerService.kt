@@ -24,13 +24,20 @@ class GameNightPickerService(private val gameNightPickerRepository: GameNightPic
         return gameNightPickerRepository.findByGameNightAndWeek(gameNight, weekNumber)?.gamer
     }
 
-    fun updatePickerForGameNight(gameNight: GameNight, weekNumber: Long, gamer: Gamer): GameNightPicker {
+    fun updatePickerForGameNight(gameNight: GameNight, weekNumber: Long, gamer: Gamer?): GameNightPicker? {
         val existing = gameNightPickerRepository.findByGameNightAndWeek(gameNight, weekNumber)
         if (existing != null) {
-            existing.gamer = gamer
-            return existing
+            if (gamer != null) {
+                existing.gamer = gamer
+                return existing
+            } else {
+                gameNightPickerRepository.delete(existing)
+            }
         }
-        return gameNightPickerRepository.save(GameNightPicker(null, gamer, gameNight, weekNumber))
+        if (gamer != null) {
+            return gameNightPickerRepository.save(GameNightPicker(null, gamer, gameNight, weekNumber))
+        }
+        return null
     }
 }
 
