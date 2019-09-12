@@ -4,6 +4,8 @@ import com.toyoda.gamesNight.controllers.RepeatEnum
 import com.toyoda.gamesNight.database.dao.GameNightRepository
 import com.toyoda.gamesNight.database.dao.GamerInGameNightRepository
 import com.toyoda.gamesNight.database.models.GameNight
+import com.toyoda.gamesNight.database.models.GameNightPicker
+import com.toyoda.gamesNight.database.models.Gamer
 import com.toyoda.gamesNight.database.models.GamerInGameNight
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
@@ -15,6 +17,7 @@ import javax.transaction.Transactional
 @Service
 @Transactional(rollbackOn = [Exception::class])
 class GameNightService(private val gameNightRepository: GameNightRepository, private val gamerService: GamerService,
+                       private val gameNightPickerService: GameNightPickerService,
                        private val gamerInGameNightRepository: GamerInGameNightRepository) {
     fun getNights(): Set<GameNight> {
         return gameNightRepository.findAll().toSet()
@@ -72,6 +75,28 @@ class GameNightService(private val gameNightRepository: GameNightRepository, pri
 
     fun findByIdIn(nights: Set<Int>): Set<GameNight> {
         return gameNightRepository.findAllById(nights).toSet()
+    }
+
+    fun getPickersForGamesNight(id: Int): Map<Long, Gamer> {
+        val gameNight = findById(id) ?: throw InvalidIdException()
+        return gameNightPickerService.getFuturePickersForGameNight(gameNight)
+    }
+
+    fun getPickerForGameNightForWeek(id: Int, weekNumber: Long): Gamer? {
+        val gameNight = findById(id) ?: throw InvalidIdException()
+        return gameNightPickerService.getPickerForGameNightForWeek(gameNight, weekNumber)
+    }
+
+    fun setPickerForNight(id: Int, gamerId: Int, weekNumber: Long): GameNightPicker {
+        val gameNight = findById(id) ?: throw InvalidIdException()
+        val gamer = gamerService.findById(gamerId) ?: throw InvalidIdException()
+        return gameNightPickerService.updatePickerForGameNight(gameNight, weekNumber, gamer)
+
+    }
+
+    fun getWeekNumber(id: Int): Long {
+        val gameNight = findById(id) ?: throw InvalidIdException()
+        return getWeeksElapsed(gameNight, Instant.now())
     }
 
 }

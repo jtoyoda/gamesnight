@@ -33,6 +33,23 @@ class GameNightController(private val gamesNightService: GameNightService) {
         gamesNightService.deleteGamesNight(id)
         return ResponseEntity.noContent().build()
     }
+
+    @GetMapping("/{id}/pickers")
+    fun getPickers(@PathVariable("id") id: Int): ResponseEntity<Any> {
+        val pickers = gamesNightService.getPickersForGamesNight(id)
+        return ResponseEntity.ok(pickers)
+    }
+
+    @PutMapping("/{id}/pickers")
+    fun setPicker(@PathVariable("id") id: Int, @RequestBody gameNightPickerBody: GameNightPickerBody): ResponseEntity<Any> {
+        val picker = gamesNightService.setPickerForNight(id, gameNightPickerBody.gamerId, gameNightPickerBody.weekNumber)
+        return ResponseEntity.ok(picker)
+    }
+
+    @GetMapping("/{id}/week-number")
+    fun getWeekNumber(@PathVariable("id") id: Int): ResponseEntity<Any> {
+        return ResponseEntity.ok(gamesNightService.getWeekNumber(id))
+    }
 }
 
 data class GamesNightBody(val name: String, val dayOfWeek: DayOfWeek, val attendees: Set<Int>, val repeat: RepeatEnum,
@@ -40,3 +57,5 @@ data class GamesNightBody(val name: String, val dayOfWeek: DayOfWeek, val attend
 
 data class GamesNightUpdateBody(val name: String?, val dayOfWeek: DayOfWeek?, val attendees: Set<Int>?, val repeat: RepeatEnum?,
                                 val hour: Int?, val minute: Int?)
+
+data class GameNightPickerBody(val gamerId: Int, val weekNumber: Long)
