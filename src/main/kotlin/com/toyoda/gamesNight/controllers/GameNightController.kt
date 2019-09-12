@@ -46,9 +46,9 @@ class GameNightController(private val gamesNightService: GameNightService) {
         return ResponseEntity.ok(picker)
     }
 
-    @GetMapping("/{id}/week-number")
-    fun getWeekNumber(@PathVariable("id") id: Int): ResponseEntity<Any> {
-        return ResponseEntity.ok(gamesNightService.getWeekNumber(id))
+    @GetMapping("/{id}/upcoming")
+    fun getUpcomingDates(@PathVariable("id") id: Int): ResponseEntity<Any> {
+        return ResponseEntity.ok(gamesNightService.getUpcomingNights(id))
     }
 }
 

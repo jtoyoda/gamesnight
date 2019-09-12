@@ -34,11 +34,7 @@ class CronService(private val gameNightService: GameNightService, private val ga
         gameNight.id?.let { gameNightId ->
             val picker = gameNightService.getPickerForGameNightForWeek(gameNightId, weekNumber + 1)
             val zonedNow = now.atZone(zoneId)
-            val date = zonedNow
-                    .plusDays(7)
-                    .withHour(gameNight.hour ?: DEFAULT_HOUR)
-                    .withMinute(gameNight.minute ?: DEFAULT_MINUTE)
-                    .toInstant().toEpochMilli()
+            val date = getNextEvent(now, gameNight)
             gameEventService.createEventWithNight(getName(gameNight, zonedNow, weekNumber), gameNight, picker, date)
         }
     }

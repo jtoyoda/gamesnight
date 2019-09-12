@@ -7,6 +7,7 @@ import com.toyoda.gamesNight.database.models.GameNight
 import com.toyoda.gamesNight.database.models.GameNightPicker
 import com.toyoda.gamesNight.database.models.Gamer
 import com.toyoda.gamesNight.database.models.GamerInGameNight
+import com.toyoda.gamesNight.zoneId
 import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.sql.Timestamp
@@ -94,9 +95,14 @@ class GameNightService(private val gameNightRepository: GameNightRepository, pri
 
     }
 
-    fun getWeekNumber(id: Int): Long {
+    fun getUpcomingNights(id: Int): Map<Long, Long> {
         val gameNight = findById(id) ?: throw InvalidIdException()
-        return getWeeksElapsed(gameNight, Instant.now())
+        var now = Instant.now()
+        return (0..8).associate { i ->
+            val time = getNextEvent(now, gameNight)
+            val weekNumber = getWeeksElapsed(gameNight, now)
+            now = Instant.ofEpochMilli(time)
+            weekNumber to time
+        }
     }
-
 }
