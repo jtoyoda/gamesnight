@@ -100,7 +100,7 @@ class GameNightService(private val gameNightRepository: GameNightRepository, pri
         var now = Instant.now()
         return (0..8).associate { i ->
             val time = getNextEvent(now, gameNight)
-            val weekNumber = getWeeksElapsed(gameNight, now)
+            val weekNumber = getWeeksElapsed(gameNight, time)
             now = Instant.ofEpochMilli(time)
             weekNumber to time
         }
