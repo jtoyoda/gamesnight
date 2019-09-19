@@ -37,7 +37,7 @@ class GameEventService(private val gameEventRepository: GameEventRepository, pri
         return createEvent(name, night.attendees.map { it.gamer }, picker, date, null, null)
     }
 
-    fun updateEvent(id: Int, name: String?, attendees: Set<Int>?, picker: Int?, date: Long?, game: String?): GameEvent {
+    fun updateEvent(id: Int, name: String?, attendees: Set<Int>?, picker: Int?, date: Long?, game: String?, gameId: Long?): GameEvent {
         val event = gameEventRepository.findByIdOrNull(id) ?: throw InvalidIdException()
         event.name = name ?: event.name
         var gameChanged = false
@@ -61,6 +61,7 @@ class GameEventService(private val gameEventRepository: GameEventRepository, pri
         }
         if (game != null && game != event.game) {
             event.game = game
+            event.gameId = gameId ?: event.gameId
             gameChanged = true
         }
         if (gameChanged || timeChanged || pickerChanged) {

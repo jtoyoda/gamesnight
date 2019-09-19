@@ -29,7 +29,7 @@ class AdminEventController(private val gameEventService: GameEventService) {
 
     @PutMapping("/{id}")
     fun updateEvent(@RequestBody event: EventUpdateBody, @PathVariable("id") id: Int): ResponseEntity<Any> {
-        gameEventService.updateEvent(id, event.name, event.attendees, event.picker, event.date, event.game)
+        gameEventService.updateEvent(id, event.name, event.attendees, event.picker, event.date, event.game, event.gameId)
         return ResponseEntity.ok(gameEventService.getEvent(id))
     }
 
