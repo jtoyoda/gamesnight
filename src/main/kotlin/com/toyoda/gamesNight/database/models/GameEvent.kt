@@ -14,6 +14,7 @@ data class GameEvent(
         var name: String?,
         var game: String?,
         var date: Timestamp?,
+        var gameId: Long?,
         @OneToMany(mappedBy = "event", fetch = FetchType.EAGER)
         @JsonSerialize(using = GamerAttendsGameEventSerializer::class)
         var attendees: MutableList<GamerAttendsGameEvent>,

@@ -23,7 +23,7 @@ class GamerAttendsEventController(private val gameEventService: GameEventService
                             @RequestBody respondToEventBody: ResponseToEventBody,
                             @PathVariable("id") id: Int): ResponseEntity<Any> {
         val user = authService.getUser(getTokenFromAuthorizationString(bearerToken))
-        return ResponseEntity.ok(gameEventService.updateEventForUser(id, user, respondToEventBody.attending, respondToEventBody.game))
+        return ResponseEntity.ok(gameEventService.updateEventForUser(id, user, respondToEventBody.attending, respondToEventBody.game, respondToEventBody.gameId))
     }
 
     /**
@@ -46,4 +46,4 @@ class GamerAttendsEventController(private val gameEventService: GameEventService
     }
 }
 
-data class ResponseToEventBody(val game: String?, val attending: Boolean?)
+data class ResponseToEventBody(val game: String?, val gameId: Long?, val attending: Boolean?)
