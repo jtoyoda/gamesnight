@@ -48,27 +48,27 @@ class EmailService(val sendGrid: SendGrid) {
 
     fun notifyEventUpdate(email: String, event: GameEvent, gameChanged: Boolean, timeChanged: Boolean, pickerChanged: Boolean) {
         val newGameStringContent = "${event.picker?.name
-                ?: "The Sommelier"} has chosen <strong>${event.game}</strong>"
-        val newTimeContent = "The time has been updated to ${getDateFormat(event.date)}."
+                ?: "The Sommelier"} has chosen <strong>${event.game}</strong>. "
+        val newTimeContent = "The time has been updated to ${getDateFormat(event.date)}. "
         val pickerContent = if (email == event.picker?.email)
-            "You are now the Sommelier."
+            "You are now the Sommelier. "
         else
-            "${event.picker?.name ?: "Nobody"} is now the Sommelier."
+            "${event.picker?.name ?: "Nobody"} is now the Sommelier. "
 
         var contentString = if (gameChanged) newGameStringContent else ""
         if (timeChanged) {
-            contentString = "$contentString$newTimeContent. "
+            contentString = "$contentString$newTimeContent"
         }
         if (pickerChanged) {
-            contentString = "$contentString$pickerContent. "
+            contentString = "$contentString$pickerContent"
         }
-        contentString = "$contentString. See the event <a href='$url' target='_'>here</a>"
+        contentString = "$contentString See the event <a href='$url' target='_'>here</a>"
         sendEmail("Update! ${if (timeChanged) "New Time " else ""}${getDateFormat(event.date)}: ${event.name} presents ${event.game}", "<html><body>$contentString</body></html>", email)
     }
 
     private fun sendEmail(subject: String, htmlContent: String, email: String) {
         if (sendEmail.toBoolean()) {
-            val from = Email("boardGames@donotrespond.com")
+            val from = Email("boardGames@donotrespond.com", "Board Game Events")
 
             val to = Email(email)
 
