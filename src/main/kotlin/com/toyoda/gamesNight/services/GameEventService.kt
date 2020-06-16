@@ -121,7 +121,8 @@ class GameEventService(private val gameEventRepository: GameEventRepository, pri
         }
     }
 
-    fun getEventsByGameNight(gameNightId: Int): Set<GameEvent> {
-        return gameEventRepository.findByGameNightId(gameNightId);
+    fun getFutureEventsByGameNight(gameNightId: Int): Set<GameEvent> {
+        val now = Instant.now()
+        return gameEventRepository.findByGameNightId(gameNightId).filter { it.date?.toInstant()?.let { date -> date > now } ?: false}.toSet()
     }
 }
