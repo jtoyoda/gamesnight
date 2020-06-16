@@ -1,5 +1,6 @@
 package com.toyoda.gamesNight.controllers
 
+import com.toyoda.gamesNight.services.GameEventService
 import com.toyoda.gamesNight.services.GameNightService
 import org.springframework.http.ResponseEntity
 import org.springframework.stereotype.Controller
@@ -9,7 +10,7 @@ import java.time.DayOfWeek
 @Controller
 @RequestMapping("/api/v1/gamesNight/nights")
 @CrossOrigin
-class GameNightController(private val gamesNightService: GameNightService) {
+class GameNightController(private val gamesNightService: GameNightService, val eventService: GameEventService) {
 
     @GetMapping
     fun getGameNights(): ResponseEntity<Any> {
@@ -53,6 +54,11 @@ class GameNightController(private val gamesNightService: GameNightService) {
     @GetMapping("/{id}/upcoming")
     fun getUpcomingDates(@PathVariable("id") id: Int): ResponseEntity<Any> {
         return ResponseEntity.ok(gamesNightService.getUpcomingUnscheduledNights(id))
+    }
+
+    @GetMapping("/{id}/events")
+    fun getScheduledEvents(@PathVariable("id") id: Int): ResponseEntity<Any> {
+        return ResponseEntity.ok(eventService.getEventsByGameNight(id))
     }
 }
 

@@ -34,7 +34,7 @@ class GameEventService(private val gameEventRepository: GameEventRepository, pri
     }
 
     fun createEventWithNight(name: String, night: GameNight, picker: Gamer?, date: Long): GameEvent {
-        return createEvent(name, night.attendees.map { it.gamer }, picker, date, null, null)
+        return createEvent(name, night.attendees.map { it.gamer }, picker, date, null, null, night)
     }
 
     fun updateEvent(id: Int, name: String?, attendees: Set<Int>?, picker: Int?, date: Long?, game: String?, gameId: Long?): GameEvent {
@@ -108,8 +108,8 @@ class GameEventService(private val gameEventRepository: GameEventRepository, pri
         return gameEventRepository.findByIdOrNull(id) ?: throw InvalidIdException()
     }
 
-    fun createEvent(name: String, attendees: List<Gamer>, picker: Gamer?, date: Long, game: String?, gameId: Long?): GameEvent {
-        val event = gameEventRepository.save(GameEvent(null, name, game, Timestamp(date), gameId, mutableListOf(), picker))
+    fun createEvent(name: String, attendees: List<Gamer>, picker: Gamer?, date: Long, game: String?, gameId: Long?, night: GameNight? = null): GameEvent {
+        val event = gameEventRepository.save(GameEvent(null, name, game, Timestamp(date), gameId, mutableListOf(), picker, night))
         val usersInvited = gamerAttendsGameEventService.inviteGamers(attendees, event)
         event.attendees = usersInvited
         return gameEventRepository.save(event)
@@ -119,5 +119,9 @@ class GameEventService(private val gameEventRepository: GameEventRepository, pri
         gameEventRepository.findByPicker(gamer).forEach {
             it.picker = null
         }
+    }
+
+    fun getEventsByGameNight(gameNightId: Int): Set<GameEvent> {
+        return gameEventRepository.findByGameNightId(gameNightId);
     }
 }
