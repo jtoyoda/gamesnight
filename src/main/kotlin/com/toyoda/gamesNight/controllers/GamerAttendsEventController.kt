@@ -23,7 +23,7 @@ class GamerAttendsEventController(private val gameEventService: GameEventService
                             @RequestBody respondToEventBody: ResponseToEventBody,
                             @PathVariable("id") id: Int): ResponseEntity<Any> {
         val user = authService.getUser(getTokenFromAuthorizationString(bearerToken))
-        return ResponseEntity.ok(gameEventService.updateEventForUser(
+        return ResponseEntity.ok(gameEventService.updateEventForGamer(
                 id,
                 user,
                 respondToEventBody.attending,

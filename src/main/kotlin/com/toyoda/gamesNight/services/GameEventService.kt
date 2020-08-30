@@ -91,7 +91,7 @@ class GameEventService(private val gameEventRepository: GameEventRepository, pri
         }.toSet()
     }
 
-    fun updateEventForUser(id: Int, gamer: Gamer, attending: Boolean?, game: String?, gameId: Long?, message: String?): GamerAttendsGameEvent {
+    fun updateEventForGamer(id: Int, gamer: Gamer, attending: Boolean?, game: String?, gameId: Long?, message: String?): GamerAttendsGameEvent {
         val event = gameEventRepository.findByIdOrNull(id) ?: throw InvalidIdException()
         val userAttendsGameEvent = event.attendees.find { it.gamer == gamer } ?: throw InvalidIdException()
         attending?.let {
@@ -109,6 +109,11 @@ class GameEventService(private val gameEventRepository: GameEventRepository, pri
             }
         }
         return userAttendsGameEvent
+    }
+
+    fun updateEventForGamer(id: Int, gamerId: Int, attending: Boolean): GamerAttendsGameEvent {
+        val gamer = gamerService.findById(gamerId) ?: throw InvalidIdException()
+        return updateEventForGamer(id, gamer, attending, null, null, null)
     }
 
 

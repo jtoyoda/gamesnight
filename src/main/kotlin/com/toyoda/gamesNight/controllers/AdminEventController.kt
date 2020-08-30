@@ -38,7 +38,19 @@ class AdminEventController(private val gameEventService: GameEventService) {
         gameEventService.deleteEvent(id)
         return ResponseEntity.noContent().build()
     }
+
+    @PutMapping("/{id}/gamers/{attendeeId}")
+    fun updateAttendee(
+            @RequestBody attendee: UpdateAttendeeBody,
+            @PathVariable("id") id: Int,
+            @PathVariable("attendeeId") attendeeId: Int
+    ) : ResponseEntity<Any> {
+        val gamerAttendsGameEvent = gameEventService.updateEventForGamer(id, attendeeId, attendee.attending)
+        return ResponseEntity.ok(gamerAttendsGameEvent)
+    }
 }
+
+data class UpdateAttendeeBody(val attending: Boolean)
 
 data class EventBody(val name: String, val nights: Set<Int>?, val attendees: Set<Int>?, val picker: Int?, val date: Long, val game: String?, val gameId: Long?)
 
