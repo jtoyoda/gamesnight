@@ -10,11 +10,12 @@ class GamerAttendsGameEventSerializer : JsonSerializer<MutableList<GamerAttendsG
         if (value != null) {
             gen!!.writeObject(value.map { gamerAttendsGameEvent ->
                 GamerPlusStatus(gamerAttendsGameEvent.gamer?.id, gamerAttendsGameEvent.gamer?.name,
-                        gamerAttendsGameEvent.gamer?.email, gamerAttendsGameEvent.attending)
+                        gamerAttendsGameEvent.gamer?.email, gamerAttendsGameEvent.attending,
+                        gamerAttendsGameEvent.message)
             })
         }
     }
 
 }
 
-data class GamerPlusStatus(val id: Int?, val name: String?, val email: String?, val attending: Boolean?)
+data class GamerPlusStatus(val id: Int?, val name: String?, val email: String?, val attending: Boolean?, val message: String?)

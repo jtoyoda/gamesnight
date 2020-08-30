@@ -12,5 +12,6 @@ data class GamerAttendsGameEvent(
         var gamer: Gamer?,
         @ManyToOne
         var event: GameEvent?,
-        var attending: Boolean?
+        var attending: Boolean?,
+        var message: String?
 )

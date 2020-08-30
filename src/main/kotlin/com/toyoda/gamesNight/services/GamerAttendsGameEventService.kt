@@ -35,6 +35,6 @@ class GamerAttendsGameEventService(private val userAttendsGameEventRepository: U
 
     private fun inviteUser(gamer: Gamer, event: GameEvent): GamerAttendsGameEvent {
         emailService.inviteUser(event, gamer)
-        return userAttendsGameEventRepository.save(GamerAttendsGameEvent(null, gamer, event, null))
+        return userAttendsGameEventRepository.save(GamerAttendsGameEvent(null, gamer, event, null, null))
     }
 }

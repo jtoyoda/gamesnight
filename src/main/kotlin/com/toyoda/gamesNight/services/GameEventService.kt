@@ -91,18 +91,26 @@ class GameEventService(private val gameEventRepository: GameEventRepository, pri
         }.toSet()
     }
 
-    fun updateEventForUser(id: Int, gamer: Gamer, attending: Boolean?, game: String?, gameId: Long?): GamerAttendsGameEvent {
+    fun updateEventForUser(id: Int, gamer: Gamer, attending: Boolean?, game: String?, gameId: Long?, message: String?): GamerAttendsGameEvent {
         val event = gameEventRepository.findByIdOrNull(id) ?: throw InvalidIdException()
         val userAttendsGameEvent = event.attendees.find { it.gamer == gamer } ?: throw InvalidIdException()
-        userAttendsGameEvent.attending = attending ?: userAttendsGameEvent.attending
+        attending?.let {
+            userAttendsGameEvent.attending = it
+        }
+        message?.let {
+            userAttendsGameEvent.message = it
+        }
         if (game != null && event.picker == gamer) {
             event.game = game
             event.gameId = gameId ?: event.gameId
-            event.attendees.mapNotNull { it.gamer?.email }.map { emailService.notifyEventUpdate(it, event,
-                    gameChanged = true, timeChanged = false, pickerChanged = false) }
+            event.attendees.mapNotNull { it.gamer?.email }.map {
+                emailService.notifyEventUpdate(it, event,
+                        gameChanged = true, timeChanged = false, pickerChanged = false)
+            }
         }
         return userAttendsGameEvent
     }
+
 
     fun getEvent(id: Int): GameEvent {
         return gameEventRepository.findByIdOrNull(id) ?: throw InvalidIdException()
@@ -123,6 +131,8 @@ class GameEventService(private val gameEventRepository: GameEventRepository, pri
 
     fun getFutureEventsByGameNight(gameNightId: Int): Set<GameEvent> {
         val now = Instant.now()
-        return gameEventRepository.findByGameNightId(gameNightId).filter { it.date?.toInstant()?.let { date -> date > now } ?: false}.toSet()
+        return gameEventRepository.findByGameNightId(gameNightId).filter {
+            it.date?.toInstant()?.let { date -> date > now } ?: false
+        }.toSet()
     }
 }
