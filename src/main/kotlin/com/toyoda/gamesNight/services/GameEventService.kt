@@ -88,7 +88,7 @@ class GameEventService(private val gameEventRepository: GameEventRepository, pri
 
     fun getFutureEventsForUser(gamer: Gamer): Set<GameEvent> {
         return gameEventRepository.findByAttendeesGamerIn(gamer).filter { gameEvent ->
-            gameEvent.date?.after(Timestamp(Instant.now().toEpochMilli())) ?: false
+            gameEvent.date?.after(Timestamp(Instant.now().minus(5, ChronoUnit.HOURS).toEpochMilli())) ?: false
         }.toSet()
     }
 
