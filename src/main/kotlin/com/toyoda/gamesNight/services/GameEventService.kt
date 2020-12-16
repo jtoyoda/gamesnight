@@ -9,6 +9,7 @@ import org.springframework.data.repository.findByIdOrNull
 import org.springframework.stereotype.Service
 import java.sql.Timestamp
 import java.time.Instant
+import java.time.temporal.ChronoUnit
 import javax.transaction.Transactional
 
 @Service
@@ -75,7 +76,7 @@ class GameEventService(private val gameEventRepository: GameEventRepository, pri
 
     fun getAllFutureEvents(): Set<GameEvent> {
         return gameEventRepository.findAll().filter { gameEvent ->
-            gameEvent.date?.after(Timestamp(Instant.now().toEpochMilli())) ?: false
+            gameEvent.date?.after(Timestamp.from(Instant.now().minus(5, ChronoUnit.HOURS))) ?: false
         }.toSet()
     }
 
