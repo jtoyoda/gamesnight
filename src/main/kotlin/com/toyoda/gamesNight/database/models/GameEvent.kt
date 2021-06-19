@@ -18,6 +18,7 @@ data class GameEvent(
         var game: String?,
         var date: Timestamp?,
         var gameId: Long?,
+        var maxPlayers: Int?,
         @OneToMany(mappedBy = "event", fetch = FetchType.EAGER)
         @JsonSerialize(using = GamerAttendsGameEventSerializer::class)
         var attendees: MutableList<GamerAttendsGameEvent>,

@@ -11,7 +11,10 @@ const val BEARER_TOKEN = "Bearer"
 @Controller
 @RequestMapping("/api/v1/gamesNight/events")
 @CrossOrigin
-class GamerAttendsEventController(private val gameEventService: GameEventService, private val authService: AuthService) {
+class GamerAttendsEventController(
+    private val gameEventService: GameEventService,
+    private val authService: AuthService
+) {
     @GetMapping
     fun getEventsForGamer(@RequestHeader("Authorization") bearerToken: String): ResponseEntity<Any> {
         val user = authService.getUser(getTokenFromAuthorizationString(bearerToken))
@@ -19,18 +22,23 @@ class GamerAttendsEventController(private val gameEventService: GameEventService
     }
 
     @PutMapping("/{id}")
-    fun updateEventForGamer(@RequestHeader("Authorization") bearerToken: String,
-                            @RequestBody respondToEventBody: ResponseToEventBody,
-                            @PathVariable("id") id: Int): ResponseEntity<Any> {
+    fun updateEventForGamer(
+        @RequestHeader("Authorization") bearerToken: String,
+        @RequestBody respondToEventBody: ResponseToEventBody,
+        @PathVariable("id") id: Int
+    ): ResponseEntity<Any> {
         val user = authService.getUser(getTokenFromAuthorizationString(bearerToken))
-        return ResponseEntity.ok(gameEventService.updateEventForGamer(
+        return ResponseEntity.ok(
+            gameEventService.updateEventForGamer(
                 id,
                 user,
                 respondToEventBody.attending,
                 respondToEventBody.game,
                 respondToEventBody.gameId,
-                respondToEventBody.message
-        ))
+                respondToEventBody.message,
+                respondToEventBody.maxPlayers
+            )
+        )
     }
 
     /**
@@ -53,4 +61,10 @@ class GamerAttendsEventController(private val gameEventService: GameEventService
     }
 }
 
-data class ResponseToEventBody(val game: String?, val gameId: Long?, val attending: Boolean?, val message: String?)
+data class ResponseToEventBody(
+    val game: String?,
+    val gameId: Long?,
+    val attending: Boolean?,
+    val message: String?,
+    val maxPlayers: Int?
+)

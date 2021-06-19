@@ -18,27 +18,27 @@ class GameEventService(private val gameEventRepository: GameEventRepository, pri
                        private val gameNightService: GameNightService,
                        private val gamerAttendsGameEventService: GamerAttendsGameEventService,
                        private val emailService: EmailService) {
-    fun createEventWithAttendees(name: String, attendees: Set<Int>, picker: Int?, date: Long, game: String?, gameId: Long?): GameEvent {
+    fun createEventWithAttendees(name: String, attendees: Set<Int>, picker: Int?, date: Long, game: String?, gameId: Long?, maxPlayers: Int?): GameEvent {
         val pickerGamer = if (picker != null) gamerService.findById(picker) else null
         val usersInvited = gamerService.findByIdIn(attendees)
-        return createEvent(name, usersInvited, pickerGamer, date, game, gameId)
+        return createEvent(name, usersInvited, pickerGamer, date, game, gameId, maxPlayers)
     }
 
-    fun createEventWithNights(name: String, nights: Set<Int>, picker: Int?, date: Long, game: String?, gameId: Long?): GameEvent {
+    fun createEventWithNights(name: String, nights: Set<Int>, picker: Int?, date: Long, game: String?, gameId: Long?, maxPlayers: Int?): GameEvent {
         val gameNights = gameNightService.findByIdIn(nights)
         val pickerUser = if (picker != null) {
             gamerService.findById(picker)
         } else {
             null
         }
-        return createEvent(name, gameNights.flatMap { it.attendees }.map { it.gamer }, pickerUser, date, game, gameId)
+        return createEvent(name, gameNights.flatMap { it.attendees }.map { it.gamer }, pickerUser, date, game, gameId, maxPlayers)
     }
 
     fun createEventWithNight(name: String, night: GameNight, picker: Gamer?, date: Long): GameEvent {
-        return createEvent(name, night.attendees.map { it.gamer }, picker, date, null, null, night)
+        return createEvent(name, night.attendees.map { it.gamer }, picker, date, null, null, null, night)
     }
 
-    fun updateEvent(id: Int, name: String?, attendees: Set<Int>?, picker: Int?, date: Long?, game: String?, gameId: Long?): GameEvent {
+    fun updateEvent(id: Int, name: String?, attendees: Set<Int>?, picker: Int?, date: Long?, game: String?, gameId: Long?, maxPlayers: Int?): GameEvent {
         val event = gameEventRepository.findByIdOrNull(id) ?: throw InvalidIdException()
         event.name = name ?: event.name
         var gameChanged = false
@@ -60,16 +60,24 @@ class GameEventService(private val gameEventRepository: GameEventRepository, pri
                 timeChanged = true
             }
         }
+        if (maxPlayers != null) {
+            event.maxPlayers = maxPlayers
+        }
         if (game != null && game != event.game) {
             event.game = game
             event.gameId = gameId ?: event.gameId
             gameChanged = true
         }
-        if (gameChanged || timeChanged || pickerChanged) {
+        if (gameChanged || timeChanged) {
             event.attendees.mapNotNull { it.gamer?.email }
                     .map {
                         emailService.notifyEventUpdate(it, event, gameChanged, timeChanged, pickerChanged)
                     }
+        }
+        if (pickerChanged) {
+            event.picker?.email?.let {
+                emailService.notifyEventUpdate(it, event, gameChanged, timeChanged, pickerChanged)
+            }
         }
         return gameEventRepository.save(event)
     }
@@ -87,16 +95,21 @@ class GameEventService(private val gameEventRepository: GameEventRepository, pri
     }
 
     fun getFutureEventsForUser(gamer: Gamer): Set<GameEvent> {
-        return gameEventRepository.findByAttendeesGamerIn(gamer).filter { gameEvent ->
+        return gameEventRepository.findByAttendeesGamer(gamer).filter { gameEvent ->
             gameEvent.date?.after(Timestamp(Instant.now().minus(5, ChronoUnit.HOURS).toEpochMilli())) ?: false
         }.toSet()
     }
 
-    fun updateEventForGamer(id: Int, gamer: Gamer, attending: Boolean?, game: String?, gameId: Long?, message: String?): GamerAttendsGameEvent {
+    fun updateEventForGamer(id: Int, gamer: Gamer, attending: Boolean?, game: String?, gameId: Long?, message: String?, maxPlayers: Int?): GamerAttendsGameEvent {
         val event = gameEventRepository.findByIdOrNull(id) ?: throw InvalidIdException()
         val userAttendsGameEvent = event.attendees.find { it.gamer == gamer } ?: throw InvalidIdException()
-        attending?.let {
-            userAttendsGameEvent.attending = it
+        attending?.let { attending ->
+            event.maxPlayers?.let { maxPlayers ->
+                if (event.attendees.filter { it.attending == true }.size >= maxPlayers && attending && userAttendsGameEvent.attending != true) {
+                    throw TooManyPlayersException()
+                }
+            }
+            userAttendsGameEvent.attending = attending
         }
         message?.let {
             userAttendsGameEvent.message = it
@@ -109,12 +122,15 @@ class GameEventService(private val gameEventRepository: GameEventRepository, pri
                         gameChanged = true, timeChanged = false, pickerChanged = false)
             }
         }
+        if (maxPlayers != null) {
+            event.maxPlayers = maxPlayers
+        }
         return userAttendsGameEvent
     }
 
     fun updateEventForGamer(id: Int, gamerId: Int, attending: Boolean): GamerAttendsGameEvent {
         val gamer = gamerService.findById(gamerId) ?: throw InvalidIdException()
-        return updateEventForGamer(id, gamer, attending, null, null, null)
+        return updateEventForGamer(id, gamer, attending, null, null, null, null)
     }
 
 
@@ -122,8 +138,8 @@ class GameEventService(private val gameEventRepository: GameEventRepository, pri
         return gameEventRepository.findByIdOrNull(id) ?: throw InvalidIdException()
     }
 
-    fun createEvent(name: String, attendees: List<Gamer>, picker: Gamer?, date: Long, game: String?, gameId: Long?, night: GameNight? = null): GameEvent {
-        val event = gameEventRepository.save(GameEvent(null, name, game, Timestamp(date), gameId, mutableListOf(), picker, night))
+    fun createEvent(name: String, attendees: List<Gamer>, picker: Gamer?, date: Long, game: String?, gameId: Long?, maxPlayers: Int?, night: GameNight? = null): GameEvent {
+        val event = gameEventRepository.save(GameEvent(null, name, game, Timestamp(date), gameId, maxPlayers, mutableListOf(), picker, night))
         val usersInvited = gamerAttendsGameEventService.inviteGamers(attendees, event)
         event.attendees = usersInvited
         return gameEventRepository.save(event)
