@@ -80,7 +80,7 @@ class EmailService(val sendGrid: SendGrid) {
                 request.method = Method.POST
                 request.endpoint = "mail/send"
                 request.body = mail.build()
-                val response = sendGrid.api(request)
+                sendGrid.api(request)
             } catch (ex: IOException) {
             }
         }

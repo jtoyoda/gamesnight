@@ -103,13 +103,13 @@ class GameEventService(private val gameEventRepository: GameEventRepository, pri
     fun updateEventForGamer(id: Int, gamer: Gamer, attending: Boolean?, game: String?, gameId: Long?, message: String?, maxPlayers: Int?): GamerAttendsGameEvent {
         val event = gameEventRepository.findByIdOrNull(id) ?: throw InvalidIdException()
         val userAttendsGameEvent = event.attendees.find { it.gamer == gamer } ?: throw InvalidIdException()
-        attending?.let { attending ->
+        attending?.let { isAttending ->
             event.maxPlayers?.let { maxPlayers ->
-                if (event.attendees.filter { it.attending == true }.size >= maxPlayers && attending && userAttendsGameEvent.attending != true) {
+                if (event.attendees.filter { it.attending == true }.size >= maxPlayers && isAttending && userAttendsGameEvent.attending != true) {
                     throw TooManyPlayersException()
                 }
             }
-            userAttendsGameEvent.attending = attending
+            userAttendsGameEvent.attending = isAttending
         }
         message?.let {
             userAttendsGameEvent.message = it

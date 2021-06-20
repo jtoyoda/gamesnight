@@ -103,7 +103,7 @@ class GameNightService(private val gameNightRepository: GameNightRepository, pri
         val gameNight = findById(id) ?: throw InvalidIdException()
         var now = Instant.now()
         var first: Long? = null
-        val ret = (0..9).associate { i ->
+        val ret = (0..9).associate { _ ->
             val time = getNextEvent(now, gameNight)
             now = Instant.ofEpochMilli(time)
             val weekNumber = getWeeksElapsed(gameNight, now)
